@@ -254,6 +254,13 @@ export default function App() {
       .filter((element): element is HTMLElement => Boolean(element));
 
     function updateActiveSection() {
+      const scrollBottom = window.scrollY + window.innerHeight;
+      const pageBottom = document.documentElement.scrollHeight;
+      if (pageBottom - scrollBottom < 32) {
+        setActiveSection(sectionIds[sectionIds.length - 1]);
+        return;
+      }
+
       let current = sectionIds[0];
       for (const element of elements) {
         if (element.getBoundingClientRect().top <= 150) {
