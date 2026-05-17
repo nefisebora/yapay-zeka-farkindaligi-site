@@ -1,0 +1,2979 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yapay Zekâ Farkındalığı, Prompt Mühendisliği ve Kişisel YZ Asistanı — Katılımcı Kitapçığı</title>
+<style>
+:root {
+  --navy: #1B3A5C;
+  --navy-dark: #102542;
+  --gold: #C8A85F;
+  --gold-dark: #9C7F3D;
+  --cream: #FAF6EE;
+  --cream-2: #F0EBE0;
+  --ink: #1F1F1F;
+  --ink-muted: #5C5C5C;
+  --line: #D9D2BF;
+  --info-bg: #EEF4F8;
+  --info-line: #6FA0C2;
+  --warn-bg: #FBF3E5;
+  --warn-line: #C8A85F;
+  --good-bg: #EEF6EF;
+  --good-line: #5A8A65;
+  --bad-bg: #FBEEE9;
+  --bad-line: #B36A4D;
+  --exer-bg: #F4EEF7;
+  --exer-line: #8A6FA1;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--cream);
+}
+.page-wrap {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 56px 80px;
+}
+h1, h2, h3, h4 {
+  font-family: 'Iowan Old Style', Georgia, serif;
+  color: var(--navy);
+  line-height: 1.25;
+}
+h1 { font-size: 38px; margin: 0 0 8px; letter-spacing: -0.4px; }
+h2 {
+  font-size: 28px;
+  margin: 56px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy);
+}
+h3 { font-size: 21px; margin: 36px 0 12px; }
+h4 { font-size: 17px; margin: 24px 0 8px; color: var(--navy-dark); }
+p { margin: 0 0 14px; }
+strong { color: var(--navy-dark); }
+em { color: var(--ink-muted); }
+.subtitle {
+  font-size: 18px;
+  color: var(--ink-muted);
+  font-style: italic;
+  margin: 0 0 32px;
+}
+.kicker {
+  display: inline-block;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Cover */
+.cover {
+  border-top: 8px solid var(--navy);
+  border-bottom: 1px solid var(--line);
+  padding: 32px 0 40px;
+  margin-bottom: 24px;
+}
+.cover-meta {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: var(--ink-muted);
+  letter-spacing: 0.5px;
+}
+.cover-meta span { display: inline-block; margin-right: 18px; }
+
+/* Boxes */
+.box {
+  border-radius: 6px;
+  padding: 18px 22px;
+  margin: 18px 0;
+  border-left: 4px solid var(--info-line);
+  background: var(--info-bg);
+}
+.box-title {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: var(--navy-dark);
+}
+.box.warn { background: var(--warn-bg); border-left-color: var(--warn-line); }
+.box.warn .box-title { color: var(--gold-dark); }
+.box.good { background: var(--good-bg); border-left-color: var(--good-line); }
+.box.good .box-title { color: var(--good-line); }
+.box.bad { background: var(--bad-bg); border-left-color: var(--bad-line); }
+.box.bad .box-title { color: var(--bad-line); }
+.box.exer { background: var(--exer-bg); border-left-color: var(--exer-line); }
+.box.exer .box-title { color: var(--exer-line); }
+.box p:last-child { margin-bottom: 0; }
+.box ul, .box ol { margin: 4px 0 4px 18px; padding: 0; }
+
+/* Prompt comparison cards */
+.prompt-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+.prompt-card {
+  border: 1px solid var(--line);
+  border-left: 6px solid;
+  padding: 14px 18px;
+  border-radius: 4px;
+  background: #fff;
+}
+.prompt-card .lbl {
+  font-family: -apple-system, sans-serif;
+  font-size: 11px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.prompt-card.bad { border-left-color: var(--bad-line); }
+.prompt-card.bad .lbl { color: var(--bad-line); }
+.prompt-card.ok { border-left-color: var(--warn-line); }
+.prompt-card.ok .lbl { color: var(--gold-dark); }
+.prompt-card.gr { border-left-color: var(--good-line); }
+.prompt-card.gr .lbl { color: var(--good-line); }
+.prompt-card .q {
+  font-family: 'Menlo', Consolas, monospace;
+  font-size: 13px;
+  background: var(--cream-2);
+  padding: 8px 10px;
+  border-radius: 3px;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13.5px;
+}
+th, td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  background: var(--cream-2);
+  color: var(--navy-dark);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.7px;
+}
+tr:nth-child(even) td { background: rgba(240, 235, 224, 0.4); }
+
+/* Two-column compare */
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0;
+}
+.compare > div {
+  padding: 16px 18px;
+  border-radius: 5px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--gold);
+}
+.compare h4 { margin-top: 0; }
+
+/* TOC */
+.toc {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 24px 28px;
+  margin: 24px 0 40px;
+}
+.toc h3 { margin-top: 0; }
+.toc ol { padding-left: 22px; margin: 0; }
+.toc ol li { margin: 6px 0; }
+.toc a { color: var(--navy-dark); text-decoration: none; border-bottom: 1px dotted var(--line); }
+.toc a:hover { color: var(--navy); border-bottom-color: var(--navy); }
+.toc .toc-section {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 700;
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+.toc .toc-section:first-child { margin-top: 0; }
+
+/* Cheat sheet (dark) */
+.cheat {
+  background: var(--navy);
+  color: #fff;
+  border-radius: 6px;
+  padding: 28px 32px;
+  margin: 32px 0;
+  page-break-inside: avoid;
+}
+.cheat h3, .cheat h4 { color: var(--gold); border: none; }
+.cheat h3 { margin-top: 0; padding-bottom: 8px; border-bottom: 1px solid rgba(200,168,95,0.3); }
+.cheat strong { color: #fff; }
+.cheat table { color: #fff; }
+.cheat th { background: var(--navy-dark); color: var(--gold); border-bottom-color: rgba(200,168,95,0.3); }
+.cheat td { border-bottom-color: rgba(255,255,255,0.1); }
+.cheat tr:nth-child(even) td { background: rgba(255,255,255,0.04); }
+.cheat .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.cheat .grid > div {
+  background: var(--navy-dark);
+  padding: 14px 18px;
+  border-radius: 5px;
+  border-left: 3px solid var(--gold);
+}
+.cheat .grid h4 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Module divider (dark page break) */
+.module-divider {
+  background: var(--navy);
+  color: #fff;
+  margin: 64px -56px 32px;
+  padding: 56px 56px 64px;
+  page-break-before: always;
+}
+.module-divider .kicker { color: var(--gold); }
+.module-divider h2 {
+  color: #fff;
+  border-bottom: 2px solid var(--gold);
+  margin-top: 0;
+  font-size: 36px;
+}
+.module-divider p {
+  font-size: 17px;
+  color: rgba(255,255,255,0.85);
+  font-style: italic;
+  margin: 12px 0 0;
+}
+
+/* Diagram */
+.diagram {
+  margin: 28px 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 24px;
+  text-align: center;
+  page-break-inside: avoid;
+}
+.diagram svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.diagram-caption {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-top: 12px;
+  font-style: italic;
+}
+
+/* Screenshots */
+.screen-figure {
+  margin: 22px 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px;
+  page-break-inside: avoid;
+}
+.screen-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  border: 1px solid rgba(217,210,191,0.65);
+}
+.screen-figure figcaption {
+  font-family: -apple-system, sans-serif;
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* Section / Chapter heading */
+.chapter-tag {
+  font-family: -apple-system, sans-serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 700;
+  margin-top: 48px;
+  margin-bottom: 4px;
+}
+
+/* Quote / Pull quote */
+.pullquote {
+  border-left: 4px solid var(--gold);
+  padding: 8px 0 8px 22px;
+  margin: 20px 0;
+  font-family: 'Iowan Old Style', Georgia, serif;
+  font-size: 18px;
+  color: var(--navy-dark);
+  font-style: italic;
+}
+
+/* Inline code / prompt */
+code.inline {
+  font-family: 'Menlo', Consolas, monospace;
+  font-size: 13px;
+  background: var(--cream-2);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--navy-dark);
+}
+pre.prompt {
+  font-family: 'Menlo', Consolas, monospace;
+  font-size: 13px;
+  background: var(--cream-2);
+  padding: 14px 18px;
+  border-radius: 4px;
+  border-left: 4px solid var(--gold);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  margin: 16px 0;
+}
+
+/* Card grid for tool profiles */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.tool-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--gold);
+  border-radius: 5px;
+  padding: 14px 18px;
+}
+.tool-card h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+.tool-card .tagline {
+  font-family: -apple-system, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.tool-card p { font-size: 13.5px; margin: 0; color: var(--ink-muted); }
+
+/* Inline definition list */
+.deflist {
+  margin: 16px 0;
+}
+.deflist dt {
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin-top: 10px;
+}
+.deflist dd { margin: 2px 0 8px 0; color: var(--ink); }
+
+/* Print */
+@media print {
+  body { background: #fff; font-size: 11pt; }
+  .page-wrap { max-width: none; padding: 18mm 16mm; }
+  h2 { page-break-after: avoid; }
+  .box, .cheat, .diagram, table, .prompt-stack { page-break-inside: avoid; }
+  .module-divider { page-break-before: always; margin: 0 -16mm 12mm; padding: 24mm 16mm; }
+  a { color: var(--navy-dark); text-decoration: none; }
+}
+
+@media (max-width: 720px) {
+  .page-wrap { padding: 32px 22px 60px; }
+  h1 { font-size: 30px; }
+  h2 { font-size: 24px; }
+  .module-divider { margin: 48px -22px 24px; padding: 36px 22px; }
+  .compare, .cheat .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- ============================================================ -->
+<!-- COVER -->
+<!-- ============================================================ -->
+<header class="cover" id="cover">
+  <div class="cover-meta">
+    <span>Katılımcı Kitapçığı</span>
+    <span>v1.0</span>
+  </div>
+  <div class="kicker">Yapay Zekâ Eğitim Programı</div>
+  <h1>Yapay Zekâ Farkındalığı, Prompt Mühendisliği ve Kişisel YZ Asistanı Oluşturma</h1>
+  <p class="subtitle">Üç modüllük bir programın katılımcıya doğrudan teslim edilebilir başvuru kaynağı.</p>
+</header>
+
+<!-- ============================================================ -->
+<!-- AÇILIŞ -->
+<!-- ============================================================ -->
+<section id="acilis">
+  <div class="chapter-tag">Açılış</div>
+  <h2>Bu Kitapçık Nasıl Okunmalı?</h2>
+
+  <p>Elinde tuttuğun şey, üç modüllük bir programın tüm içeriğini tek bir başvuru kaynağında topluyor. Eğitim sırasında not olarak, eğitim sonrasında çalışma masanda referans olarak kullanabilirsin. İçerik tek başına ayakta durabilecek şekilde tasarlandı, eğitime girmemiş biri bile kitapçığı okuyup işine yarar bir şey çıkarabilir.</p>
+
+  <p>İçeriği iki yoldan tüketebilirsin. Birincisi, baştan sona sırayla okumak. Kavramlar birbirinin üzerine inşa ediliyor, doğrusal okuma kavramsal yayı bütün halinde gösterir. İkincisi, ihtiyaç anında açıp kullanmak. Cheat sheet'ler, şablonlar ve hızlı başvuru tabloları tam bunun için var.</p>
+
+  <h3>Her bölümün içinde beş tip kutu görürsün</h3>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu</div>
+    <p>Konuyu derinleştiren ek bilgi ya da uygulamada işe yarayan püf nokta.</p>
+  </div>
+
+  <div class="box warn">
+    <div class="box-title">Dikkat</div>
+    <p>Sık karşılaşılan tuzaklar ve önemli uyarılar. Atlama, geri dönüp toplamak zorunda kalırsın.</p>
+  </div>
+
+  <div class="box good">
+    <div class="box-title">Örnek</div>
+    <p>Konunun somut bir iş senaryosunda nasıl göründüğü. Soyutu gözünde canlandırmaya yarar.</p>
+  </div>
+
+  <div class="box bad">
+    <div class="box-title">Yapma</div>
+    <p>Net "hayır" sinyali. Konunun kırmızı çizgileri.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Kavramı içselleştirmek için kısa, hemen yapılabilir bir uygulama. Zaman ayır, atlama, çünkü asıl öğrenme burada başlıyor.</p>
+  </div>
+
+  <p style="margin-top:24px;"><em>Bir notum daha var. Bu eğitim boyunca anlattığım şeylerin bir kısmı bir hafta sonra eskimiş olacak. Araçlar hızla değişiyor. O yüzden buradaki amaç tek tek tuş kombinasyonlarını ezberlemek değil, hangi durumda hangi araca, neden uzandığını anlamak. Düşünme alışkanlığı kalır, arayüz değişir.</em></p>
+</section>
+
+<!-- ============================================================ -->
+<!-- TOC -->
+<!-- ============================================================ -->
+<nav class="toc" id="icindekiler">
+  <h3>İçindekiler</h3>
+
+  <div class="toc-section">Açılış</div>
+  <ol>
+    <li><a href="#acilis">Bu Kitapçık Nasıl Okunmalı?</a></li>
+  </ol>
+
+  <div class="toc-section">Modül 1 — Yapay Zekâ Farkındalığı ve Prompt Mühendisliği</div>
+  <ol>
+    <li><a href="#m1-b1">Yapay Zekâ Nedir? Klasik AI vs Üretken AI</a></li>
+    <li><a href="#m1-b2">Yapay Zekânın Kısa Tarihi</a></li>
+    <li><a href="#m1-b3">İş Hayatında Yapay Zekâ: Departmanlar ve Vakalar</a></li>
+    <li><a href="#m1-b4">Büyük Dil Modelleri ve Farklı AI Araçları</a></li>
+    <li><a href="#m1-b5">"Uygulama İsmi Değil, Teknoloji İsmi" Yaklaşımı</a></li>
+    <li><a href="#m1-b6">Kendi İşinde Yapay Zekâ Fırsatlarını Tespit Etmek</a></li>
+    <li><a href="#m1-b7">AI'nın Sınırları: Halüsinasyon ve Doğrulama</a></li>
+    <li><a href="#m1-b8">Kurumsal Veri Hijyeni ve Etik</a></li>
+    <li><a href="#m1-b9">Prompt Nedir? Temel Mantık</a></li>
+    <li><a href="#m1-b10">6P Çerçevesi: İyi Promptun Altı Taşı</a></li>
+    <li><a href="#m1-b11">İteratif Geliştirme ve Sık Yapılan Hatalar</a></li>
+    <li><a href="#m1-cheat">Modül 1 Hızlı Başvuru</a></li>
+  </ol>
+
+  <div class="toc-section">Modül 2 — Claude 101</div>
+  <ol>
+    <li><a href="#m2-b1">Claude'un Temel Mantığı</a></li>
+    <li><a href="#m2-b2">Claude ile Etkili Çalışma Yöntemleri</a></li>
+    <li><a href="#m2-b3">Claude Desktop: Chat, Cowork, Code</a></li>
+    <li><a href="#m2-b4">Projects: Kalıcı Çalışma Alanları</a></li>
+    <li><a href="#m2-b5">Artifacts: Görünür Çıktılar</a></li>
+    <li><a href="#m2-b6">Skills: Tekrarlayan Süreçleri Otomatikleştirme</a></li>
+    <li><a href="#m2-b7">Connectors: Claude'u İş Akışına Bağlamak</a></li>
+    <li><a href="#m2-b8">Dosya, Metin ve Analiz Senaryoları</a></li>
+    <li><a href="#m2-b9">Düşünme Çerçeveleri ile Claude</a></li>
+    <li><a href="#m2-b10">Yaratıcılığı Genişletme Teknikleri</a></li>
+    <li><a href="#m2-b11">Yazma, Revizyon ve Ton</a></li>
+    <li><a href="#m2-b12">Karar Verme Ortağı Olarak Claude</a></li>
+    <li><a href="#m2-b13">Çoklu Araç Ekosistemi</a></li>
+    <li><a href="#m2-cheat">Modül 2 Hızlı Başvuru</a></li>
+  </ol>
+
+  <div class="toc-section">Modül 3 — Kişisel Yapay Zekâ Yansımamızı Oluşturmak</div>
+  <ol>
+    <li><a href="#m3-b1">Kişisel Yansımamızı Bulmak — Taste Interviewer Yöntemi</a></li>
+    <li><a href="#m3-b1b">Bölüm 1B — Röportaj Olmadan About Me Dosyası</a></li>
+    <li><a href="#m3-b2">Projelere Yansımamızı Eklemek (Claude ve ChatGPT)</a></li>
+    <li><a href="#m3-b3">Türkçe Yapay Zekâ Karşıtı Yazım Stili Rehberi</a></li>
+    <li><a href="#m3-cheat">Modül 3 Hızlı Başvuru</a></li>
+  </ol>
+
+  <div class="toc-section">Ekler</div>
+  <ol>
+    <li><a href="#ek-a">Ek A — Şablon Kütüphanesi (22 Hazır Kalıp)</a></li>
+    <li><a href="#ek-b">Ek B — Pre/Post Öz Değerlendirme Formu</a></li>
+    <li><a href="#ek-c">Ek C — Glossary (Kısa Terim Sözlüğü)</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<!-- MODÜL 1 — DIVIDER -->
+<!-- ============================================================ -->
+<section class="module-divider" id="modul-1">
+  <div class="kicker">Modül 1</div>
+  <h2>Yapay Zekâ Farkındalığı ve Prompt Mühendisliğine Giriş</h2>
+  <p>Üretken yapay zekânın mantığı, güncel araç ekosistemi, sınırları ve etkili prompt yazımı.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 1: AI NEDİR? -->
+<!-- ============================================================ -->
+<section id="m1-b1">
+  <div class="chapter-tag">Modül 1 · Bölüm 1</div>
+  <h2>Yapay Zekâ Nedir? Klasik AI vs Üretken AI</h2>
+
+  <p>Yapay zekâ, bilgisayarların normalde insan tarafından yapılan işleri öğrenerek yapabilmesini sağlayan teknoloji. Yüz tanıma, trafik tahmini, spam filtreleme. Bunların hepsi yapay zekânın klasik biçimleri. Yapı olarak şuna benzer: var olan veriyi alır, sınıflandırır veya tahmin eder.</p>
+
+  <p>Üretken yapay zekâ ise farklı bir şey yapar. <strong>Sıfırdan içerik üretir.</strong> Yeni bir metin, yeni bir görsel, yeni bir kod, yeni bir müzik, yeni bir video. Aslında bu kitapçığın odaklandığı şey de bu: üretken AI.</p>
+
+  <h3>Günlük hayatta zaten içindeyiz</h3>
+
+  <p>Yapay zekâ uzun süredir hayatımızda. Sadece fark etmiyoruz çünkü "arka planda" çalışıyor. Birkaç örnek:</p>
+
+  <ul>
+    <li>Netflix'in "Bunu da beğenebilirsin" önerileri</li>
+    <li>Spotify'ın haftalık keşfet listesi</li>
+    <li>Bankaların dolandırıcılık tespit sistemleri</li>
+    <li>Gmail'in spam ayırması</li>
+    <li>Google Fotoğraflar'ın yüz tanıma araması</li>
+    <li>Navigasyonun trafik yoğunluğuna göre rota önermesi</li>
+  </ul>
+
+  <p>Bunlar büyük ölçüde klasik yapay zekâ ve makine öğrenmesi tabanlı sistemler. Ortak özellikleri şu: eldeki veriyi analiz ederler, sınıflandırma veya tahmin yaparlar, yeni bir şey üretmekten çok mevcut veriyi anlamlandırmaya odaklanırlar.</p>
+
+  <div class="compare">
+    <div>
+      <h4>Klasik AI</h4>
+      <p style="font-family:'Menlo',Consolas,monospace; font-size:13px; color:var(--ink-muted); margin-bottom:6px;">Var olan veriyi sınıflandırır veya tahmin eder.</p>
+      <p>"Bu e-posta spam mi değil mi?"<br>"Yarın yağmur ihtimali yüzde kaç?"<br>"Bu fotoğraftaki kim?"</p>
+    </div>
+    <div>
+      <h4>Üretken AI</h4>
+      <p style="font-family:'Menlo',Consolas,monospace; font-size:13px; color:var(--ink-muted); margin-bottom:6px;">İstenen biçimde yeni bir içerik üretir.</p>
+      <p>"Yeni ürün için bir reklam metni yaz."<br>"Şu konseptten bir görsel oluştur."<br>"Bu fonksiyon için Python kodu çıkar."</p>
+    </div>
+  </div>
+
+  <h3>Üretken AI'nın üretim alanları</h3>
+
+  <p>Üretken modeller bugün beş ana alanda profesyonel düzeyde üretim yapar:</p>
+
+  <ul>
+    <li><strong>Metin:</strong> Makale, e-posta, rapor özeti, sözleşme taslağı.</li>
+    <li><strong>Görsel:</strong> Resim, illüstrasyon, logo, sunum görselleri.</li>
+    <li><strong>Müzik:</strong> Melodi, jingle, fon müziği kompozisyonu.</li>
+    <li><strong>Kod:</strong> Program parçaları, formüller, otomasyon betikleri.</li>
+    <li><strong>Video:</strong> Animasyon, tanıtım videosu, görsel efekt.</li>
+  </ul>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu</div>
+    <p>İş hayatında en sık dokunacağın ilk ikisi: metin ve görsel. Bu kitapçık ağırlıklı olarak metin üretimi üzerine yoğunlaşıyor, ama prensip aynı. Bir araç ne kadar iyi olursa olsun, sen ne istediğini netleştirmeden iyi sonuç vermez.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Önümüzdeki bir hafta içinde yapacağın üç işi listele. Hangileri klasik AI'nın işi (sınıflandırma/tahmin), hangileri üretken AI'nın işi (yeni içerik üretmek)? Çoğunlukla ikinci grupta olduğunu fark edeceksin. Aslında günümüzün asıl kazancı şu yerde saklı: "üretmek" diye düşündüğümüz işin büyük kısmı, hazır blokları doğru şekilde birleştirmek.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 2: KISA TARİH -->
+<!-- ============================================================ -->
+<section id="m1-b2">
+  <div class="chapter-tag">Modül 1 · Bölüm 2</div>
+  <h2>Yapay Zekânın Kısa Tarihi</h2>
+
+  <p>Bugün kullandığın araçlar uzun bir gelişim çizgisinin ürünü. Bilgi olarak değil, neden bu noktada olduğumuzu anlamak için bir bakış:</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Yapay zekânın altı kritik durağı">
+      <line x1="40" y1="120" x2="720" y2="120" stroke="#1B3A5C" stroke-width="2"/>
+      <!-- node 1 -->
+      <circle cx="80" cy="120" r="7" fill="#1B3A5C"/>
+      <text x="80" y="100" text-anchor="middle" font-family="Georgia" font-size="13" font-weight="bold" fill="#1B3A5C">1964</text>
+      <text x="80" y="148" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">ELIZA</text>
+      <text x="80" y="164" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#5C5C5C">İlk chatbot</text>
+      <!-- node 2 -->
+      <circle cx="208" cy="120" r="7" fill="#1B3A5C"/>
+      <text x="208" y="100" text-anchor="middle" font-family="Georgia" font-size="13" font-weight="bold" fill="#1B3A5C">1980-2000</text>
+      <text x="208" y="148" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Sinir Ağları</text>
+      <text x="208" y="164" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#5C5C5C">Donanım kısıtlı</text>
+      <!-- node 3 -->
+      <circle cx="336" cy="120" r="7" fill="#1B3A5C"/>
+      <text x="336" y="100" text-anchor="middle" font-family="Georgia" font-size="13" font-weight="bold" fill="#1B3A5C">2014</text>
+      <text x="336" y="148" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">GAN devrimi</text>
+      <text x="336" y="164" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#5C5C5C">Gerçekçi görsel</text>
+      <!-- node 4 -->
+      <circle cx="464" cy="120" r="7" fill="#1B3A5C"/>
+      <text x="464" y="100" text-anchor="middle" font-family="Georgia" font-size="13" font-weight="bold" fill="#1B3A5C">2022</text>
+      <text x="464" y="148" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">GPT-3 çağı</text>
+      <text x="464" y="164" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#5C5C5C">İnsan benzeri metin</text>
+      <!-- node 5 -->
+      <circle cx="592" cy="120" r="7" fill="#1B3A5C"/>
+      <text x="592" y="100" text-anchor="middle" font-family="Georgia" font-size="13" font-weight="bold" fill="#1B3A5C">2024</text>
+      <text x="592" y="148" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Çok modlu AI</text>
+      <text x="592" y="164" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#5C5C5C">Metin + görsel + ses</text>
+      <!-- node 6 -->
+      <circle cx="720" cy="120" r="9" fill="#C8A85F"/>
+      <text x="720" y="100" text-anchor="middle" font-family="Georgia" font-size="13" font-weight="bold" fill="#9C7F3D">Bugün</text>
+      <text x="720" y="148" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Agentic AI</text>
+      <text x="720" y="164" text-anchor="middle" font-family="Helvetica" font-size="10" fill="#5C5C5C">Karar veren araçlar</text>
+    </svg>
+    <div class="diagram-caption">Şekil 1 — Üretken yapay zekânın altı kritik durağı.</div>
+  </div>
+
+  <p>Bugün kullandığın ChatGPT, Claude, Gemini, Copilot, Perplexity bu uzun yolculuğun sonucu. Hızlı tarihçeden çıkarılması gereken pratik ders şu: AI bir gece icat edilmedi. On yıllarca biriken araştırma son üç dört yılda halka açıldı. O yüzden hâlâ "yeni" sayılır ve hâlâ büyük hızla değişir.</p>
+
+  <div class="box warn">
+    <div class="box-title">Dikkat</div>
+    <p>"Bu işi öğrendim, tamamdır" yaklaşımı bu alanda iş görmez. Bugünün en iyi modeli altı ay sonra ikinci sınıfa düşebilir. O yüzden tek tek araçları değil, araç seçim mantığını öğreniyoruz. Mantık kalıcı, araç değişken.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 3: İŞ HAYATINDA AI -->
+<!-- ============================================================ -->
+<section id="m1-b3">
+  <div class="chapter-tag">Modül 1 · Bölüm 3</div>
+  <h2>İş Hayatında Yapay Zekâ: Departmanlar ve Vakalar</h2>
+
+  <p>AI'nın iş hayatındaki kullanım alanları geniş ama dağınık görünebilir. Aşağıda her departman için en sık karşılaşılan üç gerçek senaryo ve birer mini vaka var.</p>
+
+  <h3>Pazarlama</h3>
+
+  <ul>
+    <li>Sosyal medya paylaşımları, üç farklı tonda taslak.</li>
+    <li>Kampanya sloganı ve başlık üretimi, çoklu seçenekle.</li>
+    <li>Hedef kitle segmentasyonu, mevcut müşteri verisinin yorumu.</li>
+  </ul>
+
+  <div class="box good">
+    <div class="box-title">Mini Vaka — Pazarlama</div>
+    <p>Bir B2B SaaS şirketinde pazarlama uzmanı, yeni özellik için LinkedIn paylaşımları hazırlıyor. Üç versiyon istiyor: teknik karar verici, iş kullanıcısı, C-level. AI tek bir promptla üç versiyonu birden çıkardığında 40 dakikalık iş 8 dakikaya iniyor. Devamında uzman ton düzeltmeleri ve marka diline uyarlama yapıyor. Aslında AI'nın asıl katkısı şu: ilk taslağı sıfırdan başlamanın enerjisini sana geri veriyor.</p>
+  </div>
+
+  <h3>İnsan Kaynakları</h3>
+
+  <ul>
+    <li>İş ilanı taslağı, rol bazlı, içerme dili gözetilerek.</li>
+    <li>CV özetleme ve karşılaştırma, ön elemede zaman tasarrufu.</li>
+    <li>Mülakat sorusu üretimi: davranışsal, durumsal, teknik karışık.</li>
+  </ul>
+
+  <div class="box warn">
+    <div class="box-title">Dikkat — İK için kritik sınır</div>
+    <p>AI, aday hakkında tek başına karar verici olarak kullanılamaz. Ön özetleme, soru üretimi, ilan yazımı gibi destek alanlarında çok değerlidir. Ama adayı eleme veya seçme kararı insan yargısıyla alınmalıdır. KVKK ve şirket politikası açısından bu sınır zorunludur.</p>
+  </div>
+
+  <h3>Müşteri Hizmetleri</h3>
+
+  <ul>
+    <li>Şikâyet özetleme ve kategori atama.</li>
+    <li>Şablon yanıt hazırlama, ton ayarıyla.</li>
+    <li>Bilgi tabanı taraması, uzun dokümandan ilgili paragrafı çıkarma.</li>
+  </ul>
+
+  <h3>Finans ve Raporlama</h3>
+
+  <ul>
+    <li>Uzun finansal raporları sade özete dönüştürme.</li>
+    <li>Tablolardan içgörü çıkarma (anomali, trend, sapma).</li>
+    <li>Yönetim sunumlarına başlık ve madde özeti üretimi.</li>
+  </ul>
+
+  <h3>Günlük Ofis ve Eğitim</h3>
+
+  <ul>
+    <li>5-7 slaytlık sunum iskeleti.</li>
+    <li>E-posta yazımı, yeniden yazımı, ton ayarı.</li>
+    <li>Akademik makale sadeleştirme, sınav öncesi tekrar özeti.</li>
+  </ul>
+
+  <h3>Tipik senaryolar, doğal cümlelerle</h3>
+
+  <ol>
+    <li>"Patronuma göndereceğim e-postayı daha profesyonel hale getir."</li>
+    <li>"Toplantı notlarından 5 maddelik kısa özet çıkar."</li>
+    <li>"LinkedIn için dikkat çekici bir paylaşım metni yaz."</li>
+    <li>"Excel'deki şu tablodan basit bir grafik öner."</li>
+    <li>"Bilim Etiği dersindeki 50 sayfalık PDF notunu sınav öncesi hızlı tekrar için 10 maddelik özet yap."</li>
+    <li>"Sunum için 5 slaytlık basit bir taslak hazırla."</li>
+  </ol>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Geçen hafta yaptığın işleri zihninden geçir. Yukarıdaki beş kategoriden hangisine düşüyorlar? Aralarından üç tanesini seç ve yanına "Bu işin hangi adımını AI'ya devredebilirim?" diye notla. Cevap çoğu zaman "tamamını" değil "şu parçasını" olur. Asıl iş orada başlar.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 4: LLM ve FARKLI AI ARAÇLARI -->
+<!-- ============================================================ -->
+<section id="m1-b4">
+  <div class="chapter-tag">Modül 1 · Bölüm 4</div>
+  <h2>Büyük Dil Modelleri ve Farklı AI Araçları</h2>
+
+  <h3>Büyük Dil Modeli (LLM) nedir?</h3>
+
+  <p>Büyük dil modelleri, çok büyük metin veri setleri üzerinde eğitilmiş, doğal dili anlama ve üretme konusunda uzmanlaşmış yapay zekâ modelleri. Başlıca yetenekleri:</p>
+
+  <ul>
+    <li>Verilen metni anlamak ve devamını yazmak,</li>
+    <li>Soru-cevap yapmak,</li>
+    <li>Uzun metinleri özetlemek,</li>
+    <li>Başka dillere çevirmek,</li>
+    <li>Tarz ve ton değiştirerek yeniden yazmak,</li>
+    <li>Yapılandırılmamış metinden yapılandırılmış bilgi çıkarmak.</li>
+  </ul>
+
+  <p>Dünyadaki milyonlarca kitap, makale ve web metnini okumuş, bunlardaki dil örüntülerini öğrenmiş, sonra "bu örüntülere benzer yeni metinler" yazabilen bir asistan gibi düşünebilirsin. Aslında zihninde resmettiğin şey ne kadar net olursa, alacağın sonuç da o kadar isabetli olur.</p>
+
+  <h3>Tek "en iyi" yok, doğru aracı doğru iş için seçmek var</h3>
+
+  <p>"Yapay zekâ" tek bir araç değil. Tıpkı alet çantasında farklı işler için farklı aletler olduğu gibi, AI dünyasında da her model farklı bir ihtiyacı karşılamak üzere tasarlandı.</p>
+
+  <div class="tool-grid">
+    <div class="tool-card">
+      <div class="tagline">ChatGPT · OpenAI</div>
+      <h4>Yaratıcılığın Ustası</h4>
+      <p>Hızlı taslak, akıcı sohbet. "Bana fikir ver" anlarında ilk tercih.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tagline">Claude · Anthropic</div>
+      <h4>Derinlik ve Güvenilirlik</h4>
+      <p>Uzun belge, hassas yazım, karar süreci. "Birlikte düşünelim" diyebileceğin partner.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tagline">Gemini · Google</div>
+      <h4>Çok Yönlü Zekâ</h4>
+      <p>Metin + görsel + ses bir arada. Google arama entegrasyonuyla güncel veri.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tagline">Copilot · Microsoft</div>
+      <h4>Ofisin İçindeki Asistan</h4>
+      <p>Word, Excel, PowerPoint, Outlook içinde çalışır. Mevcut dosyalarına dokunur.</p>
+    </div>
+    <div class="tool-card">
+      <div class="tagline">Perplexity</div>
+      <h4>Araştırmanın Yeni Yüzü</h4>
+      <p>AI destekli arama. Doğrudan cevap verir, kaynaklarını şeffaf gösterir.</p>
+    </div>
+  </div>
+
+  <div class="diagram-caption" style="text-align:center;">Şekil 2 — Beş ana AI aracının uzmanlık alanları.</div>
+
+  <h3>Kısa profiller</h3>
+
+  <h4>ChatGPT — Yaratıcılığın Ustası</h4>
+  <p>OpenAI'nin geliştirdiği ChatGPT, akıcı sohbeti ve yaratıcı metin üretimini ön plana çıkarır. Hızlı taslak istediğinde ilk tercih olarak iyi çalışır. Günlük görevler ve esprili, viral içerikte güçlüdür. <a href="https://chatgpt.com/">chatgpt.com</a></p>
+
+  <h4>Claude — Güvenilirlik ve Derinlik</h4>
+  <p>Anthropic'in geliştirdiği Claude, dikkatli ve dengeli yanıtlar üretir. Özellikle 50-100 sayfalık dokümanlarda, hassas iletişimde ve karar süreçlerinde fark yaratır. Modül 2'nin tamamını Claude'a ayırmamızın sebebi de bu. <a href="https://claude.ai/">claude.ai</a></p>
+
+  <h4>Gemini — Çok Yönlü Zekâ</h4>
+  <p>Google'ın geliştirdiği Gemini, metin, görsel ve ses ile aynı anda çalışabilen multimodal yapısıyla öne çıkar. Google arama entegrasyonu güncel bilgi ihtiyacında değerli. <a href="https://gemini.google.com/">gemini.google.com</a></p>
+
+  <h4>Microsoft Copilot — İş Dünyasının Asistanı</h4>
+  <p>Microsoft 365 (Word, Excel, PowerPoint, Outlook) içinde çalışan Copilot, mevcut dosyalarınla doğrudan etkileşime girer. GitHub Copilot ise yazılım geliştiriciler için kod asistanı. <a href="https://copilot.microsoft.com/">copilot.microsoft.com</a></p>
+
+  <h4>Perplexity — Araştırmanın Yeni Yüzü</h4>
+  <p>Perplexity klasik bir model değil, AI destekli bir arama asistanı. Doğrudan cevap verir ve kaynaklarını şeffaf gösterir. Güncel veri, makale, haber teyidi gereken her işte ilk tercih. <a href="https://www.perplexity.ai/">perplexity.ai</a></p>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu — Hangi aracı hangi iş için?</div>
+    <p>Doğru seçim için kendine dört soru sor:</p>
+    <ol>
+      <li><strong>İhtiyacın ne?</strong> Yaratıcılık, güncel bilgi, güvenlik, ofis entegrasyonu?</li>
+      <li><strong>İçerik türü ne?</strong> Uzun belge, görsel, kod, günlük metin?</li>
+      <li><strong>Zaman faktörü ne?</strong> Güncel veri gerekiyor mu?</li>
+      <li><strong>Entegrasyon ihtiyacı ne?</strong> Mevcut iş akışına bağlanmalı mı?</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 5: TEKNOLOJİ İSMİ YAKLAŞIMI + AYNI GÖREV FARKLI YAKLAŞIMLAR -->
+<!-- ============================================================ -->
+<section id="m1-b5">
+  <div class="chapter-tag">Modül 1 · Bölüm 5</div>
+  <h2>"Uygulama İsmi Değil, Teknoloji İsmi" Yaklaşımı</h2>
+
+  <p>Belirli bir uygulama ismini ezberlemek yerine, hangi teknoloji türüne ihtiyacın olduğunu bilmek. Şu farkı gör:</p>
+
+  <div class="prompt-stack">
+    <div class="prompt-card bad">
+      <div class="lbl">Markaya bağımlı düşünme</div>
+      <div class="q">"ChatGPT kullanmayı öğrenmeliyim."</div>
+    </div>
+    <div class="prompt-card gr">
+      <div class="lbl">İhtiyaca bağlı düşünme</div>
+      <div class="q">"Metinden metne çalışan bir LLM ile çalışmak istiyorum."</div>
+    </div>
+  </div>
+
+  <div class="prompt-stack">
+    <div class="prompt-card bad">
+      <div class="lbl">Markaya bağımlı düşünme</div>
+      <div class="q">"Şu görsel aracını kullanmak zorundayım."</div>
+    </div>
+    <div class="prompt-card gr">
+      <div class="lbl">İhtiyaca bağlı düşünme</div>
+      <div class="q">"Metinden görsel üreten bir araca ihtiyacım var."</div>
+    </div>
+  </div>
+
+  <p>Bu yaklaşım seni tek bir markaya bağımlı olmaktan kurtarır. Değişen araçlar karşısında esnek kılar.</p>
+
+  <h3>Aynı Görev, Farklı Yaklaşımlar</h3>
+
+  <p>Aynı promptu farklı modellere verirsen farklı sonuçlar alırsın. Bu bir hata değil. Her modelin eğitim verisi, ayarları ve "varsayılan kişiliği" farklı. Aynı promptu yedi farklı araca verdiğimizde gözlediklerimiz şu örüntüleri ortaya çıkardı.</p>
+
+  <div class="box">
+    <div class="box-title">Test Prompt</div>
+    <p style="font-family:'Menlo',Consolas,monospace; font-size:13px;">"İş dünyasına yeni giren profesyoneller için yapay zekânın iş hayatındaki pratik faydalarını anlatan 200 kelimelik bir Türkçe yazı yaz. Ton: sıcak ve motive edici. Teknik terim kullanma. Sonunda 'Bir adım atmak için ne yapabilirsiniz?' başlıklı kısa bir eylem çağrısı ekle."</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Boyut</th>
+        <th>Ortak</th>
+        <th>Farklı</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Tema</td><td>E-posta, zaman kazanma, iş yükü azaltma (7/7)</td><td>—</td></tr>
+      <tr><td>Eylem çağrısı</td><td>Hepsi koymuş (7/7)</td><td>—</td></tr>
+      <tr><td>Hitap biçimi</td><td>—</td><td>"Sen" (Gemini, Perplexity, DeepSeek) vs "siz" (ChatGPT, Copilot)</td></tr>
+      <tr><td>Format</td><td>—</td><td>Düz metin / madde listesi / belge başlıklı / başlık + alt başlık</td></tr>
+      <tr><td>Özgün ifadeler</td><td>—</td><td>"Akıllıca ilerleyen biri" (Perplexity), "sezgi" vurgusu (DeepSeek)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Bu deneyin dersi</h3>
+
+  <p>Aynı prompt benzer tema, farklı ton ve format çıkarır. Pratik sonuç üçü tek bir denkleme bağlı:</p>
+
+  <ul>
+    <li><strong>Prompt yönlendirir.</strong> İyi bir prompt tüm araçları ortak temaya çeker.</li>
+    <li><strong>Model yorumlar.</strong> Her araç kendi eğitim verisi ve ayarlarıyla farklı bir yorum üretir.</li>
+    <li><strong>Sen seçersin.</strong> İki farklı araca aynı görevi verip iki çıktıyı karşılaştırmak, bilinçli bir kalite artışı yöntemidir.</li>
+  </ul>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Bu hafta gönderdiğin bir e-postayı tek cümlede bir promptu olarak yaz. İki farklı araca aynı promptu ver. Ton, uzunluk ve yapı farklarını gözle karşılaştır. Hangisini tercih ettiğini ve nedenini bir cümleyle notla. Aslında bu küçük alışkanlık, zamanla aracın hangi işte parladığına dair sezgini geliştirir.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 6: KENDİ İŞİNDE FIRSATLAR -->
+<!-- ============================================================ -->
+<section id="m1-b6">
+  <div class="chapter-tag">Modül 1 · Bölüm 6</div>
+  <h2>Kendi İşinde Yapay Zekâ Fırsatlarını Tespit Etmek</h2>
+
+  <h3>Tekrarlayan görevleri fark etmek</h3>
+
+  <p>İlk adım, günlük iş hayatını dürüstçe taramak. Şu üç soruyu kendine sor:</p>
+
+  <ul>
+    <li>Her gün veya her hafta tekrar tekrar yaptığın işler neler?</li>
+    <li>Hangi görevler zihnini yoruyor ama yaratıcılık gerektirmiyor?</li>
+    <li>"Bunu bir şablon olsa çok kolay olurdu" dediğin işler hangileri?</li>
+  </ul>
+
+  <p>Örnek görev tipleri:</p>
+
+  <ul>
+    <li>Benzer e-postaları defalarca yazmak,</li>
+    <li>Aynı formatta raporları doldurmak,</li>
+    <li>Veri kopyalayıp yapıştırmak,</li>
+    <li>Sunumların hep aynı bölümlerini sıfırdan oluşturmak.</li>
+  </ul>
+
+  <h3>"YZ'ye devredilebilirlik" filtresi</h3>
+
+  <p>Her görev için iki soruyu sor:</p>
+
+  <ol>
+    <li>Bu işin ne kadarı <strong>kuralı belli ve tekrar eden</strong> bir yapıda?</li>
+    <li>Ne kadarı tamamen <strong>insani yargı, ilişki ve yaratıcılık</strong> gerektiriyor?</li>
+  </ol>
+
+  <p>Eğer işin büyük bölümü metin yazma, bilgi özetleme, veri sınıflandırma veya formatlama gibi adımlardan oluşuyorsa, bu kısımlar üretken yapay zekâ için adaydır.</p>
+
+  <h3>Mini egzersiz: kendi cümleni yaz</h3>
+
+  <div class="pullquote">"Ben şu an X işini elle yapıyorum. Bunun Y kısmını üretken yapay zekâya devrederek, kendime Z kadar zaman ve enerji açabilirim."</div>
+
+  <p>Örnek:</p>
+
+  <div class="box good">
+    <div class="box-title">Örnek</div>
+    <p>"Ben şu an müşteri tekliflerimi her seferinde sıfırdan yazıyorum. Bunun giriş, kapanış ve ürün açıklaması kısmını üretken YZ'ye devrederek, her gün en az 1-2 saatimi geri alabilirim."</p>
+  </div>
+
+  <h3>İşi elden almak değil, işi dönüştürmek</h3>
+
+  <p>Yapay zekâ genellikle işin tamamını değil, işin mekanik ve tekrar eden parçalarını devralır. İnsan hâlâ şu rolde:</p>
+
+  <ul>
+    <li>Hedefi tanımlayan,</li>
+    <li>Doğru soruyu soran,</li>
+    <li>Çıktıları süzen ve düzenleyen,</li>
+    <li>İlişki ve anlam inşa eden taraf.</li>
+  </ul>
+
+  <p>Dolayısıyla soru "Bu iş tamamen ortadan kalkacak mı?" değil, şu olmalı:</p>
+
+  <div class="pullquote">"Bu işin hangi adımlarını yapay zekâya devredersem, ben daha anlamlı ve yaratıcı kısımlara odaklanabilirim?"</div>
+
+  <div class="box warn">
+    <div class="box-title">Dikkat</div>
+    <p>Yapay zekâ belki çok kısa zamanda işleri elimizden almayacak. Ama yapay zekâyı kullanan insanlar alacak. Dystopik veya ütopik tartışma boş. Asıl iş, gerçekliğe bakıp kendi konumunu netleştirmekte.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 7: HALÜSİNASYON VE DOĞRULAMA -->
+<!-- ============================================================ -->
+<section id="m1-b7">
+  <div class="chapter-tag">Modül 1 · Bölüm 7</div>
+  <h2>AI'nın Sınırları: Halüsinasyon ve Doğrulama</h2>
+
+  <p>AI'yı verimli kullanmanın yarısı yeteneklerini bilmek, diğer yarısı sınırlarını bilmek. Bu bölüm atlamaca olmaz. Burayı es geçmek, sonraki bütün üretimini riske atar.</p>
+
+  <h3>AI niçin yanılır?</h3>
+
+  <p>Üretken AI olasılıkla çalışır. Bir sonraki kelimeyi veya yapıyı, eğitim verisinden hareketle "en muhtemel" diye tahmin eder. Bu, ona akıcı dil ve geniş alan bilgisi verir. Aynı yapı şu zaafları da getirir:</p>
+
+  <ul>
+    <li><strong>Halüsinasyon.</strong> Olmayan kaynak, isim, alıntı veya sayı uydurabilir.</li>
+    <li><strong>Bilgi tarihi sınırı.</strong> Eğitim verisi belli bir tarihte donar, sonrasını bilmez.</li>
+    <li><strong>Bağlam kaybı.</strong> Çok uzun sohbetlerde başlangıçtaki bazı detayları unutabilir.</li>
+    <li><strong>Aşırı emin görünme.</strong> Hatalı bilgiyi bile akıcı ve kendinden emin sunar.</li>
+    <li><strong>Önyargı.</strong> Eğitildiği veride bulunan örüntüleri tekrar eder.</li>
+  </ul>
+
+  <h3>En tehlikeli üç halüsinasyon türü</h3>
+
+  <table>
+    <thead>
+      <tr><th>Tür</th><th>Belirti</th><th>Risk</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Sahte alıntı veya kaynak</td><td>"Şu makaleye göre..." ama makale yok</td><td>Akademik, hukuki kullanımda en tehlikelisi</td></tr>
+      <tr><td>Sahte sayı veya istatistik</td><td>"Yüzde 62'sinin..." uydurulmuş veri</td><td>Sunum ve karar yanlış yöne gider</td></tr>
+      <tr><td>Sahte isim veya kurum</td><td>Olmayan kanun maddesi, ürün, kişi</td><td>Yasal ve itibari hata</td></tr>
+    </tbody>
+  </table>
+
+  <h3>5 dakikalık doğrulama akışı</h3>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Yayına almadan önce 5 dakikalık doğrulama akışı">
+      <!-- 5 steps in a row -->
+      <g font-family="Helvetica" font-size="11" fill="#1F1F1F">
+        <!-- Step 1 -->
+        <rect x="20" y="50" width="120" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="20" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="80" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">1. Çapraz</text>
+        <text x="80" y="92" text-anchor="middle" fill="#5C5C5C">Sayılar, iddialar</text>
+        <text x="80" y="108" text-anchor="middle" fill="#5C5C5C">2 ayrı kaynak</text>
+        <!-- arrow -->
+        <text x="155" y="95" font-size="20" fill="#C8A85F">→</text>
+        <!-- Step 2 -->
+        <rect x="175" y="50" width="120" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="175" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="235" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">2. İsimler</text>
+        <text x="235" y="92" text-anchor="middle" fill="#5C5C5C">Kişi, kurum,</text>
+        <text x="235" y="108" text-anchor="middle" fill="#5C5C5C">kanun, makale</text>
+        <text x="310" y="95" font-size="20" fill="#C8A85F">→</text>
+        <!-- Step 3 -->
+        <rect x="330" y="50" width="120" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="330" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="390" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">3. Sayı/Tarih</text>
+        <text x="390" y="92" text-anchor="middle" fill="#5C5C5C">Gözle teyit,</text>
+        <text x="390" y="108" text-anchor="middle" fill="#5C5C5C">birim kontrolü</text>
+        <text x="465" y="95" font-size="20" fill="#C8A85F">→</text>
+        <!-- Step 4 -->
+        <rect x="485" y="50" width="120" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="485" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="545" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">4. Mantık</text>
+        <text x="545" y="92" text-anchor="middle" fill="#5C5C5C">İç tutarlılık,</text>
+        <text x="545" y="108" text-anchor="middle" fill="#5C5C5C">çelişki var mı?</text>
+        <text x="620" y="95" font-size="20" fill="#C8A85F">→</text>
+        <!-- Step 5 (highlight) -->
+        <rect x="640" y="50" width="120" height="80" rx="6" fill="#102542" stroke="#C8A85F" stroke-width="1"/>
+        <rect x="640" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="700" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#C8A85F">5. Etik/Yasal</text>
+        <text x="700" y="92" text-anchor="middle" fill="#FFFFFF">Son okuma,</text>
+        <text x="700" y="108" text-anchor="middle" fill="#FFFFFF">yayına almadan</text>
+      </g>
+    </svg>
+    <div class="diagram-caption">Şekil 3 — Yayına almadan önce 5 dakikalık doğrulama akışı.</div>
+  </div>
+
+  <h3>Halüsinasyona karşı prompt davranışı</h3>
+
+  <ul>
+    <li><strong>"Emin değilsen söyle."</strong> Promptun sonuna ekle: <em>"Emin olmadığın bir nokta varsa 'emin değilim' demekten çekinme."</em></li>
+    <li><strong>Kaynak iste.</strong> <em>"Her iddianın kaynağını belirt; hatırlamıyorsan 'kaynak doğrulanmalı' notu ekle."</em></li>
+    <li><strong>Sayıda ihtiyat.</strong> <em>"Spekülatif sayı verme. Emin olmadığın yerde aralık ver."</em></li>
+    <li><strong>Çift-tur doğrulama.</strong> İlk cevap geldikten sonra: <em>"Şimdi bu cevabını eleştirel oku. İki yerde nerede yanılmış olabilirsin?"</em></li>
+  </ul>
+
+  <div class="box warn">
+    <div class="box-title">Dikkat</div>
+    <p>Güncel haber, fiyat, eğitim tarihi sonrası bilgi sorularını ChatGPT veya Claude'a değil, Perplexity veya Gemini'ye sor. Hukuki, medikal, yatırım kararı hiçbir AI'ya tek başına bırakılmaz. Uzman görüşü şart.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Geçen hafta AI'dan aldığın bir cevabı düşün. Üç soruyu uygulasan neyi farklı yapardın? <em>(1) Hangi sayı veya iddia için kaynak teyit ederdin? (2) Hangi isim veya kurumu gözle kontrol ederdin? (3) Yayına almadan önce hangi paydaşa son okutturman gerekirdi?</em></p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 8: VERİ HİJYENİ VE ETİK -->
+<!-- ============================================================ -->
+<section id="m1-b8">
+  <div class="chapter-tag">Modül 1 · Bölüm 8</div>
+  <h2>Kurumsal Veri Hijyeni ve Etik</h2>
+
+  <p>AI sohbetlerine yazdığın her şey dijital bir iz bırakır. Bu bölüm, kurumsal bir profesyonel olarak veriyi nasıl yöneteceğini anlatır.</p>
+
+  <h3>Asansör kuralı</h3>
+
+  <p>Pratik bir ölçüt. AI'ya yazmadan önce kendine sor:</p>
+
+  <div class="pullquote">"Bu bilgiyi asansörde yüksek sesle söyleyebilir miyim?"</div>
+
+  <ul>
+    <li><strong>Evet:</strong> Halka açık veri, basın bültenleri, web sitesi içeriği. Paylaşılabilir.</li>
+    <li><strong>Hayır:</strong> Müşteri verisi, ücret, sözleşme, kişisel performans, henüz duyurulmamış kararlar. Paylaşılmamalı.</li>
+  </ul>
+
+  <h3>Üç katmanlı veri sınıflaması</h3>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Üç katmanlı veri sınıflaması">
+      <!-- pyramid layers -->
+      <polygon points="280,40 480,40 510,100 250,100" fill="#FBEEE9" stroke="#B36A4D" stroke-width="1.5"/>
+      <text x="380" y="70" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="16" fill="#B36A4D">HASSAS</text>
+      <text x="380" y="88" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Paylaşma</text>
+      <!-- mid -->
+      <polygon points="250,100 510,100 540,180 220,180" fill="#FBF3E5" stroke="#C8A85F" stroke-width="1.5"/>
+      <text x="380" y="135" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="16" fill="#9C7F3D">İÇ</text>
+      <text x="380" y="155" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Politikayı kontrol et</text>
+      <!-- bottom -->
+      <polygon points="220,180 540,180 580,260 180,260" fill="#EEF6EF" stroke="#5A8A65" stroke-width="1.5"/>
+      <text x="380" y="218" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="16" fill="#5A8A65">AÇIK</text>
+      <text x="380" y="238" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Serbest</text>
+      <!-- side examples -->
+      <text x="40" y="74" font-family="Helvetica" font-size="11" fill="#5C5C5C">Kişisel veri, ücret,</text>
+      <text x="40" y="89" font-family="Helvetica" font-size="11" fill="#5C5C5C">sözleşme, sağlık</text>
+      <text x="40" y="142" font-family="Helvetica" font-size="11" fill="#5C5C5C">İç süreç, anonim örnek,</text>
+      <text x="40" y="157" font-family="Helvetica" font-size="11" fill="#5C5C5C">dahili politika</text>
+      <text x="40" y="220" font-family="Helvetica" font-size="11" fill="#5C5C5C">Web sitesi, basın</text>
+      <text x="40" y="235" font-family="Helvetica" font-size="11" fill="#5C5C5C">bülteni, halka açık veri</text>
+    </svg>
+    <div class="diagram-caption">Şekil 4 — Üç katmanlı veri sınıflaması.</div>
+  </div>
+
+  <h3>Beş pratik kural</h3>
+
+  <ol>
+    <li><strong>Anonimleştir.</strong> "Müşteri A", "Çalışan B". Gerçek isim yerine etiket.</li>
+    <li><strong>Genelleştir.</strong> Net rakam yerine aralık ("yaklaşık 40-50 bin TL").</li>
+    <li><strong>Parçala.</strong> Tüm dokümanı değil, sadece ilgili bölümü yapıştır.</li>
+    <li><strong>Soyutla.</strong> "Bu sözleşme" yerine "şu tipte bir sözleşme şablonu".</li>
+    <li><strong>Kurum politikası.</strong> Şirketinin AI kullanım politikası varsa onunla uyumlu davran. Yoksa İK veya hukuka sor.</li>
+  </ol>
+
+  <div class="box warn">
+    <div class="box-title">KVKK ve GDPR Hatırlatması</div>
+    <p>Kişisel veri (isim, telefon, e-posta, T.C. kimlik, IBAN, sağlık bilgisi) AI sohbetlerine doğrudan yazılmamalı. Anonimleştirme bile her durumda yeterli değil. Bağlam birleşince kimlik tahmini mümkün olabilir.</p>
+  </div>
+
+  <h3>Etik sınırlar</h3>
+
+  <div class="box bad">
+    <div class="box-title">Yapma</div>
+    <ul>
+      <li>Başkasının kimliğine bürünme ya da yanıltıcı içerik üretme.</li>
+      <li>Çalışan veya aday hakkında tek başına AI kararıyla sonuca varma.</li>
+      <li>Müşteriye AI yanıtını bir uzmanın kişisel cevabıymış gibi sunma. Şeffaf ol.</li>
+      <li>Telifi şüpheli içeriği başka birinin malıymış gibi yayma.</li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <div class="box-title">Şeffaflık ilkesi</div>
+    <p>"AI'dan yardım aldım" demek profesyonelliğini azaltmaz. AI çıktısını kendi orijinal işin gibi sunmak ise etik dışı. Özellikle akademik ve yayın bağlamlarında bu sınır net olmalı.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Geçen ay AI'ya yapıştırdığın bir metni hatırla. İçinde hangi bilgileri anonim veya genel hale getirseydin daha güvenli olurdu? En az iki örnek notla.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 9: PROMPT NEDİR? -->
+<!-- ============================================================ -->
+<section id="m1-b9">
+  <div class="chapter-tag">Modül 1 · Bölüm 9</div>
+  <h2>Prompt Nedir? Temel Mantık</h2>
+
+  <p>Prompt, yapay zekâya verdiğin talimat, soru veya yönlendirme. Bu basit tanımın arkasında büyük bir güç yatıyor.</p>
+
+  <p>Temel denklem net:</p>
+
+  <div class="compare">
+    <div style="border-left-color:#5A8A65;">
+      <h4 style="color:#5A8A65;">İyi yazılmış prompt</h4>
+      <p>Doğru, kullanılabilir, işine yarayan sonuç.</p>
+    </div>
+    <div style="border-left-color:#B36A4D;">
+      <h4 style="color:#B36A4D;">Kötü yazılmış prompt</h4>
+      <p>Belirsiz, yanlış veya yetersiz sonuç.</p>
+    </div>
+  </div>
+
+  <p>AI ne kadar güçlü olursa olsun, sorduğun şey net değilse çıkan sonuç da verimli olmayacak.</p>
+
+  <div class="pullquote">Sonuçların kalitesi, sorduğun soruya bağlıdır.</div>
+
+  <h3>Aynı görev, üç farklı prompt seviyesi</h3>
+
+  <div class="prompt-stack">
+    <div class="prompt-card bad">
+      <div class="lbl">Kötü</div>
+      <div class="q">Bana bir yazı yaz.</div>
+      <p style="margin:8px 0 0; font-size:13px; color:var(--ink-muted);">Çok genel, işe yaramayan bir metin gelir.</p>
+    </div>
+    <div class="prompt-card ok">
+      <div class="lbl">İyi</div>
+      <div class="q">Bir teknoloji dergisinde yayınlanacak, gençleri hedef alan, yapay zekânın günlük hayattaki faydalarını anlatan 200 kelimelik bir yazı yaz.</div>
+      <p style="margin:8px 0 0; font-size:13px; color:var(--ink-muted);">Çok daha odaklı bir çıktı.</p>
+    </div>
+    <div class="prompt-card gr">
+      <div class="lbl">Çok Daha İyi</div>
+      <div class="q">Sen bir teknoloji gazetecisisin. Yapay zekânın günlük hayattaki faydalarını anlatan 200 kelimelik bir yazı yaz. Hedef kitle: 18-30 yaş arası genç profesyoneller. Kısıt: samimi ve akıcı dil, 1 gerçek yaşam örneği, 3 paragraf.</div>
+      <p style="margin:8px 0 0; font-size:13px; color:var(--ink-muted);">Hedef, kitle, format, ton, kısıt. Hepsi tanımlı.</p>
+    </div>
+  </div>
+
+  <p>Aslında üç versiyonun farkı, AI'nın zekâ seviyesinde değil. Senin ne istediğini ne kadar netleştirdiğinde.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 10: 6P ÇERÇEVESİ -->
+<!-- ============================================================ -->
+<section id="m1-b10">
+  <div class="chapter-tag">Modül 1 · Bölüm 10</div>
+  <h2>6P Çerçevesi: İyi Promptun Altı Taşı</h2>
+
+  <p>Etkili bir prompt altı yapı taşından oluşur. Her birinin ilk harfi P olduğu için bu çerçeveye <strong>6P</strong> diyoruz. Alışkanlık haline getirdiğinde çıktı kalitesi sıçramalı artar.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="6P prompt çerçevesi hub-and-petal diyagramı">
+      <!-- center -->
+      <circle cx="380" cy="190" r="60" fill="#1B3A5C"/>
+      <text x="380" y="186" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="20" fill="#C8A85F">6P</text>
+      <text x="380" y="208" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#FFFFFF">İyi prompt</text>
+      <!-- 6 petals -->
+      <!-- Persona top -->
+      <ellipse cx="380" cy="60" rx="80" ry="36" fill="#FFFFFF" stroke="#C8A85F" stroke-width="1.5"/>
+      <text x="380" y="56" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Persona</text>
+      <text x="380" y="74" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#5C5C5C">Rol — "Sen bir..."</text>
+      <line x1="380" y1="96" x2="380" y2="130" stroke="#C8A85F" stroke-width="1.5"/>
+      <!-- Purpose top-right -->
+      <ellipse cx="600" cy="120" rx="80" ry="36" fill="#FFFFFF" stroke="#C8A85F" stroke-width="1.5"/>
+      <text x="600" y="116" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Purpose</text>
+      <text x="600" y="134" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#5C5C5C">Amaç — "Hedefim..."</text>
+      <line x1="540" y1="140" x2="440" y2="170" stroke="#C8A85F" stroke-width="1.5"/>
+      <!-- Profile bottom-right -->
+      <ellipse cx="600" cy="260" rx="80" ry="36" fill="#FFFFFF" stroke="#C8A85F" stroke-width="1.5"/>
+      <text x="600" y="256" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Profile</text>
+      <text x="600" y="274" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#5C5C5C">Hedef kitle — "Kime?"</text>
+      <line x1="540" y1="240" x2="440" y2="210" stroke="#C8A85F" stroke-width="1.5"/>
+      <!-- Proof bottom -->
+      <ellipse cx="380" cy="320" rx="80" ry="36" fill="#FFFFFF" stroke="#C8A85F" stroke-width="1.5"/>
+      <text x="380" y="316" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Proof</text>
+      <text x="380" y="334" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#5C5C5C">Bağlam, veri, örnek</text>
+      <line x1="380" y1="284" x2="380" y2="250" stroke="#C8A85F" stroke-width="1.5"/>
+      <!-- Parameters bottom-left -->
+      <ellipse cx="160" cy="260" rx="80" ry="36" fill="#FFFFFF" stroke="#C8A85F" stroke-width="1.5"/>
+      <text x="160" y="256" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Parameters</text>
+      <text x="160" y="274" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#5C5C5C">Kısıt, ton, uzunluk</text>
+      <line x1="220" y1="240" x2="320" y2="210" stroke="#C8A85F" stroke-width="1.5"/>
+      <!-- Presentation top-left -->
+      <ellipse cx="160" cy="120" rx="80" ry="36" fill="#FFFFFF" stroke="#C8A85F" stroke-width="1.5"/>
+      <text x="160" y="116" text-anchor="middle" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Presentation</text>
+      <text x="160" y="134" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#5C5C5C">Format — tablo, liste</text>
+      <line x1="220" y1="140" x2="320" y2="170" stroke="#C8A85F" stroke-width="1.5"/>
+    </svg>
+    <div class="diagram-caption">Şekil 5 — 6P çerçevesi. Her petal, iyi promptun bir yapı taşı.</div>
+  </div>
+
+  <h3>Altı taşın her biri</h3>
+
+  <table>
+    <thead>
+      <tr><th>P</th><th>Ne demek?</th><th>Örnek</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Persona</strong></td><td>Hangi rol? AI'ya bir kimlik verdiğinde cevabı o bakış açısına göre şekillenir.</td><td>"Sen kıdemli bir İK uzmanısın."</td></tr>
+      <tr><td><strong>Purpose</strong></td><td>Neden? Bu çıktıyı ne için kullanacaksın?</td><td>"Hedefim: işe alım sürecini özetlemek."</td></tr>
+      <tr><td><strong>Profile</strong></td><td>Kime? Çıktının hedef kitlesi.</td><td>"Hedef kitle: yönetim kurulu."</td></tr>
+      <tr><td><strong>Proof</strong></td><td>Bağlam ve örnek. Eldeki veri, kısıt, geçmiş.</td><td>"Geçen çeyrek satışlar yüzde 20 arttı."</td></tr>
+      <tr><td><strong>Parameters</strong></td><td>Kısıtlar ve stil. Uzunluk, ton, dil kuralları.</td><td>"150 kelime, sade dil, teknik terim yok."</td></tr>
+      <tr><td><strong>Presentation</strong></td><td>Format. Çıktının görsel biçimi.</td><td>"5 maddelik liste olarak ver."</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Persona'nın gücü</h3>
+
+  <p>AI'ya bir rol verdiğinde cevabı o rolün bakış açısı ve terminolojisiyle gelir. Aynı soruya farklı persona altında farklı cevaplar alırsın:</p>
+
+  <ul>
+    <li>"Sen bir hukukçusun" → risk ve uyum odaklı yanıt.</li>
+    <li>"Sen bir pazarlama yazarsın" → satış ve duygu odaklı yanıt.</li>
+    <li>"Sen bir yazılım geliştiricisin" → teknik, çözüm odaklı yanıt.</li>
+  </ul>
+
+  <h3>Altı boyutu tek tek</h3>
+
+  <h4>1. Persona — Kimi konuşturuyorsun?</h4>
+  <p>Persona, modele üstlenmesini istediğin rol veya kimlik tanımı. "Kim olarak konuşmalısın?" sorusunun cevabı.</p>
+  <p>Büyük dil modelleri farklı "tarzları" taklit edebilir. Bir uzmanlık rolü tanımladığında, model o alana özgü dil, ton ve bilgi düzeyini öne çıkarır. "Deneyimli bir pazarlama direktörü olarak..." demekle sadece "yaz" demek arasında çıktı kalitesi açısından büyük fark oluşur.</p>
+  <p>Aslında persona belirlemek, bir oyuncu için sahne yönetmeni notları yazmak gibi. "Aşağıdakileri söyle" dediğinde bir sonuç alırsın. "Bu karakteri oyna ve aşağıdakileri söyle" dediğinde çok daha tutarlı ve inandırıcı bir performans alırsın.</p>
+
+  <h4>2. Purpose — Ne istediğini netleştir</h4>
+  <p>Purpose, modelden beklediğin çıktının amacı ve görevi. "Ne yapılmasını istiyorsun?" sorusunun cevabı.</p>
+  <p>Amaç belirsiz olduğunda model ne üretmesi gerektiğini tahmin etmek zorunda kalır. Bu tahmin genellikle senin istediğinle örtüşmez.</p>
+  <p>Örnek: "...bir e-posta taslağı oluştur" (amaç: taslak), "...artıları ve eksileri listele" (amaç: analiz), "...bu metni beş yaşında bir çocuğun anlayacağı şekilde sadeleştir" (amaç: sadeleştirme).</p>
+
+  <h4>3. Profile — Kimin için üretiyorsun?</h4>
+  <p>Profile, üretilen içeriğin hangi okuyucu veya kullanıcı kitlesine yönelik olduğunun tanımı. "Bu çıktıyı kim okuyacak ya da kullanacak?" sorusunun cevabı.</p>
+  <p>Aynı konuyu 10 yaşında bir çocuğa ve 50 yaşında bir yöneticiye farklı anlatmak gerekir. Kitleni tanımladığında, model dili, karmaşıklık düzeyini ve örnekleri buna göre ayarlar.</p>
+
+  <h4>4. Proof (Bağlam ve Örnek) — Arka planı ver</h4>
+  <p>Proof, modele görevin arka planını, ilgili bilgileri veya stil örneklerini aktarmak. "Ne bilmen gerekiyor?" ve "Nasıl bir örnekten ilham almalısın?" sorularının cevabı.</p>
+  <p>Model seni tanımaz. Şirketini, sektörünü, daha önce kullandığın dili bilmez. Bu bilgileri bağlam olarak eklemek, modelin senin gerçek dünyana uygun çıktı üretmesini sağlar. Bir örnek metin eklemek "böyle bir şey istiyorum" demenin en hızlı yolu.</p>
+
+  <h4>5. Parameters — Kuralları belirle</h4>
+  <p>Parameters, modele uyması gereken kısıtları, sınırları ve stil tercihlerini iletmek. "Nasıl yapmalısın? Neleri yapmamalısın?" sorularının cevabı.</p>
+  <p>Kısıtlar olmadan model en genel çıktıyı üretir. Kısıt eklemek, onu senin ihtiyacına yönlendirir. "300 kelimeyi geçme", "teknik terim kullanma", "rakip marka isminden bahsetme" gibi.</p>
+
+  <h4>6. Presentation — Sonucun nasıl görünmesini istersin?</h4>
+  <p>Presentation, çıktının nasıl biçimlendirilmesini istediğin. "Hangi formatta üretmesini istersin?" sorusunun cevabı.</p>
+  <p>Güzel içerik yanlış formatta sunulduğunda işe yaramaz. Bir e-posta metnini tablo olarak istemezsin. Bir karşılaştırma analizini de uzun paragraflar halinde değil, tablo olarak istersin.</p>
+
+  <h3>6P'yi bir arada kullanmak: Tam örnek</h3>
+
+  <pre class="prompt">[PERSONA] Deneyimli bir sosyal medya içerik stratejisti olarak,
+
+[PURPOSE] aşağıdaki kahve markası için Instagram paylaşımları yaz.
+
+[PROFILE] Hedef kitle: şehirde yaşayan, kahveyi bir yaşam tarzı olarak benimseyen, 25-35 yaş arası profesyoneller.
+
+[PROOF] Marka adı: "Demlenir". Marka sesi: sıcak, samimi, biraz nostaljik. Daha önce kullandığımız içeriklerden bir örnek: "Sabahları en güzel sohbet, fincanınla baş başa."
+
+[PARAMETERS] Her paylaşım 100-150 karakter arasında olsun. Emoji kullanma. Hashtagle bitir. Abartılı reklam dili kullanma.
+
+[PRESENTATION] 3 farklı paylaşım seçeneği sun, her birini numaralandır.</pre>
+
+  <div class="box good">
+    <div class="box-title">Örnek — Özür e-postası gelişimi</div>
+    <p><strong>Kötü:</strong> "Bir özür maili yaz." → Rastgele.</p>
+    <p><strong>İyi:</strong> "Sen müşteri ilişkileri uzmanısın. Geciken teslimat için samimi ama profesyonel özür e-postası. 3 paragraf."</p>
+    <p><strong>Mükemmel:</strong> "Sen müşteri ilişkileri uzmanısın. Amaç: 3 gün geciken bir müşteri için özür e-postası. Hedef kitle: kurumsal satınalma sorumlusu. Bağlam: Sipariş #84213, kargo bugün çıkıyor, yüzde 10 indirim kuponu eklenmeli. 180 kelime, profesyonel ama insan ton."</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - BÖLÜM 11: İTERATİF GELİŞTİRME VE SIK HATALAR -->
+<!-- ============================================================ -->
+<section id="m1-b11">
+  <div class="chapter-tag">Modül 1 · Bölüm 11</div>
+  <h2>İteratif Geliştirme ve Sık Yapılan Hatalar</h2>
+
+  <h3>Tek atışta değil, tur tur</h3>
+
+  <p>Prompt yazmak tek seferlik bir iş değil. Çoğu zaman ilk çıkan sonuç taslak olur. Sonra yapay zekâya ek talimatlar vererek çıktıyı adım adım iyileştirebilirsin.</p>
+
+  <div class="box good">
+    <div class="box-title">Örnek akış</div>
+    <ol>
+      <li><strong>İlk prompt:</strong> "Bir kahve markası için sosyal medya gönderisi yaz."</li>
+      <li><strong>İyileştirme 1:</strong> "Metni 100 kelimeye indir."</li>
+      <li><strong>İyileştirme 2:</strong> "Tonu daha samimi yap."</li>
+      <li><strong>İyileştirme 3:</strong> "Sonuna kahveyle ilgili bir eylem çağrısı ekle."</li>
+    </ol>
+  </div>
+
+  <p>İteratif çalışmanın gizli kazancı şu: her tur sen de neyi istediğini daha net görüyorsun. AI sadece çıktı vermiyor. Sana kendi düşüncenin aynasını da tutuyor.</p>
+
+  <h3>Sık yapılan hatalar ve düzeltmeleri</h3>
+
+  <table>
+    <thead>
+      <tr><th>Hata</th><th>Sonuç</th><th>Düzeltme</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Çok kısa istem ("rapor yaz")</td><td>Genel, sığ cevap</td><td>Amaç, kitle, kapsam ekle</td></tr>
+      <tr><td>Hedef kitle belirtmemek</td><td>Yanlış ton, yanlış detay</td><td>"Hedef kitle: ..." satırı ekle</td></tr>
+      <tr><td>Çıktı formatı söylememek</td><td>Karmaşık paragraflar</td><td>"Tablo / liste / e-posta" de</td></tr>
+      <tr><td>İlk sonucu yeterli sanmak</td><td>Ortalama kalite</td><td>İteratif inceltme yap</td></tr>
+      <tr><td>Kontrol etmeden yayınlamak</td><td>Hatalı bilgi, yanlış ton</td><td>5 dakikalık doğrulama uygula</td></tr>
+      <tr><td>Çok şey aynı anda istemek</td><td>Yarım kalmış sonuç</td><td>Görevi parçala</td></tr>
+      <tr><td>Belirsiz "yaratıcı ol"</td><td>Güvenli, sığ cevap</td><td>Çerçeve ver (kısıt, metafor, persona)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <div class="box-title">Prompt İyileştirici Custom GPT</div>
+    <p>6P sürecini tek seferde kotarmak ilk başta zor olabilir. Bu yüzden işini kolaylaştıracak bir Custom GPT yaptım: <strong>Prompt İyileştirici</strong>. Senin verdiğin promptu 6P kuralına uygun şekilde yeniden yapılandırıyor. Mükemmel değil ama alışkanlık edinene kadar iyi bir yardımcı.</p>
+    <p style="margin-top:8px;"><a href="https://chatgpt.com/g/g-69d637344d7c81918b20553324df2def-prompt-iyilestirici-nb">chatgpt.com/g/g-69d637344d7c81918b20553324df2def-prompt-iyilestirici-nb</a></p>
+    <p style="margin-top:8px;"><em>Not: Custom GPT sadece ChatGPT'nin ücretli versiyonunda kullanılabiliyor.</em></p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Son gönderdiğin bir promptu al. Yukarıdaki yedi hatadan kaç tanesini içerdiğini say. Ardından aynı promptu 6P çerçevesine sığdır. Yedi maddelik kontrol listesi: Rol var mı? Amaç var mı? Kitle var mı? Bağlam var mı? Kısıt var mı? Format var mı? Doğrulama planın var mı?</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M1 - CHEAT SHEET -->
+<!-- ============================================================ -->
+<div class="cheat" id="m1-cheat">
+  <h3>Modül 1 — Hızlı Başvuru</h3>
+
+  <h4>İyi Prompt İskeleti (6P)</h4>
+  <pre style="font-family:'Menlo',Consolas,monospace; font-size:13px; background:rgba(255,255,255,0.08); padding:14px 18px; border-radius:4px; color:#fff; margin:8px 0 20px;">ROL (Persona):       Sen [kim] gibi davran.
+AMAÇ (Purpose):      [Çıktıyı ne için kullanacağım].
+KİTLE (Profile):     [Kime gidecek].
+BAĞLAM (Proof):      [Önceki kararlar, veriler, kısıtlar].
+KISIT (Parameters):  [Uzunluk, ton, yapma listesi].
+FORMAT (Present):    [Tablo / liste / e-posta / paragraf].
+GÖREV:               [Asıl iş].</pre>
+
+  <div class="grid">
+    <div>
+      <h4>Prompt Kalite Kontrol</h4>
+      <ul>
+        <li>YZ'ye bir rol atadım mı?</li>
+        <li>Amacımı ve görevimi net belirttim mi?</li>
+        <li>Çıktının kime hitap ettiğini söyledim mi?</li>
+        <li>Bağlam veya referans örnek verdim mi?</li>
+        <li>Ton, uzunluk veya dil kısıtı koydum mu?</li>
+        <li>Çıktının formatını belirttim mi?</li>
+        <li>Kritik bilgileri doğrulayacak mıyım?</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Hangi araç ne için?</h4>
+      <ul>
+        <li><strong>Uzun rapor, sentez, hassas yazım:</strong> Claude</li>
+        <li><strong>Hızlı taslak, yaratıcı, esprili:</strong> ChatGPT</li>
+        <li><strong>Güncel bilgi, kaynaklı araştırma:</strong> Perplexity</li>
+        <li><strong>Çok yönlü, görsel, arama:</strong> Gemini</li>
+        <li><strong>Office entegrasyonu:</strong> Copilot</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Doğrulama 5 dakika</h4>
+      <ol>
+        <li>Sayı / istatistik çapraz teyit</li>
+        <li>İsim / kurum / kanun doğrulaması</li>
+        <li>Tarih ve sayı gözle kontrol</li>
+        <li>Mantık tutarlılığı</li>
+        <li>Etik / yasal son okuma</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Veri hijyeni 5 kural</h4>
+      <ol>
+        <li>Anonimleştir</li>
+        <li>Genelleştir (aralık)</li>
+        <li>Parçala (ilgili bölüm)</li>
+        <li>Soyutla (tip / şablon)</li>
+        <li>Kurum politikasına uy</li>
+      </ol>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px;">Yapma listesi</h4>
+  <ul>
+    <li>Tıbbi, hukuki, yatırım kararını tek başına AI'ya bırakma.</li>
+    <li>Çalışan veya aday hakkında tek başına AI ile karar verme.</li>
+    <li>AI çıktısını kendi orijinal işin gibi sunma.</li>
+    <li>Hassas veriyi gerçek isimle yapıştırma.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODÜL 2 — DIVIDER -->
+<!-- ============================================================ -->
+<section class="module-divider" id="modul-2">
+  <div class="kicker">Modül 2</div>
+  <h2>Claude 101: Derinleşme</h2>
+  <p>Modül 1'de tüm araçları tanıdık. Şimdi bir tanesine, Claude'a, yakından bakıyoruz.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 1: CLAUDE'UN TEMEL MANTIĞI -->
+<!-- ============================================================ -->
+<section id="m2-b1">
+  <div class="chapter-tag">Modül 2 · Bölüm 1</div>
+  <h2>Claude'un Temel Mantığı</h2>
+
+  <p>Modül 1'de farklı AI modellerini tanıdık. Modül 2'de bunlardan birini, Claude'u, derinleştiriyoruz. Çünkü Claude, profesyonel kullanımda fark yaratan birkaç tasarım tercihine sahip. Bu da onu "soru-cevap" makinesinden çok, düşünme partnerine yaklaştırıyor.</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Claude'un içsel karar zinciri">
+      <g font-family="Helvetica" font-size="11" fill="#1F1F1F">
+        <rect x="20" y="50" width="160" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="20" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="100" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">1. Bağlam topla</text>
+        <text x="100" y="96" text-anchor="middle" fill="#5C5C5C">Ne biliyorum?</text>
+        <text x="195" y="95" font-size="20" fill="#C8A85F">→</text>
+        <rect x="215" y="50" width="160" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="215" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="295" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">2. Niyet çöz</text>
+        <text x="295" y="96" text-anchor="middle" fill="#5C5C5C">Asıl amaç ne?</text>
+        <text x="390" y="95" font-size="20" fill="#C8A85F">→</text>
+        <rect x="410" y="50" width="160" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="410" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="490" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">3. İma düşün</text>
+        <text x="490" y="92" text-anchor="middle" fill="#5C5C5C">Nerede yanlış</text>
+        <text x="490" y="108" text-anchor="middle" fill="#5C5C5C">anlaşılabilir?</text>
+        <text x="585" y="95" font-size="20" fill="#C8A85F">→</text>
+        <rect x="605" y="50" width="135" height="80" rx="6" fill="#102542" stroke="#C8A85F" stroke-width="1"/>
+        <rect x="605" y="50" width="4" height="80" fill="#C8A85F"/>
+        <text x="672" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#C8A85F">4. Dikkatli</text>
+        <text x="672" y="92" text-anchor="middle" font-weight="bold" font-size="13" fill="#C8A85F">yanıtla</text>
+        <text x="672" y="112" text-anchor="middle" fill="#FFFFFF">Eksiği gör</text>
+      </g>
+    </svg>
+    <div class="diagram-caption">Şekil 6 — Claude'un içsel karar zinciri.</div>
+  </div>
+
+  <h3>Claude nerede parlar, nerede zorlanır?</h3>
+
+  <div class="compare">
+    <div style="border-left-color:#5A8A65;">
+      <h4 style="color:#5A8A65;">Parlar</h4>
+      <ul style="margin:0; padding-left:18px;">
+        <li>50-100 sayfalık dokümanı bütün olarak işlemek</li>
+        <li>Yazılı içeriği yeniden yazma değil <em>geliştirme</em></li>
+        <li>Argümandaki boşlukları görmek</li>
+        <li>Hassas iletişim (kötü haber, özür, geri bildirim)</li>
+        <li>Çoklu kaynaktan sentez ve örüntü</li>
+        <li>Karar gerekçesi inşa etmek</li>
+      </ul>
+    </div>
+    <div style="border-left-color:#B36A4D;">
+      <h4 style="color:#B36A4D;">Zorlanır</h4>
+      <ul style="margin:0; padding-left:18px;">
+        <li>Çok kısa, müphem briflerde</li>
+        <li>Güncel veri, fiyat, haber sorularında</li>
+        <li>Anında hız gereken tek atışlık görevlerde</li>
+        <li>Sınırsız "yaratıcı ol" taleplerinde</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="box-title">Mantık değişikliği</div>
+    <p>Claude ile verimli çalışmanın anahtarı, <em>"Bunu benim için yapar mısın?"</em> sorusundan <em>"Şu sorunu çözmeye çalışıyorum, birlikte düşünelim"</em> çerçevesine geçmek. Claude'u bir <strong>kıdemli iş arkadaşı</strong> gibi konumlandır.</p>
+  </div>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Tanıtım</div>
+    <p>Modül 2 boyunca takip edeceğimiz senaryo şu: hayalî bir SaaS şirketi yeni ürün lansmanına hazırlanıyor. Elinizde önceki lansman raporu, ürün özet dokümanı, rakip analizi var. 30 günde lansmanı kotaracaksınız. Her bölüm bu senaryonun bir dilimini Claude ile nasıl yaptığını gösterecek.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Yarın yapacağın üç işi yaz. Yanlarına Claude'un parlayacağı (✓) veya zorlanacağı (✗) işaretini koy. Çoğunlukla hangisi çıkıyor?</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 2: ETKİLİ ÇALIŞMA -->
+<!-- ============================================================ -->
+<section id="m2-b2">
+  <div class="chapter-tag">Modül 2 · Bölüm 2</div>
+  <h2>Claude ile Etkili Çalışma Yöntemleri</h2>
+
+  <p>Claude'a görev vermek, kıdemli bir iş arkadaşına brif vermek gibi. Tek atış yerine küçük bir prosedür uygula.</p>
+
+  <h3>Brifin beş kalemi</h3>
+
+  <ol>
+    <li><strong>Bağlam.</strong> Hangi durumdayım, hangi proje, hangi seyirci?</li>
+    <li><strong>Amaç.</strong> Bu çıktıyı ne için kullanacağım?</li>
+    <li><strong>Kısıtlar.</strong> Uzunluk, ton, kaçınılacak ifadeler, format.</li>
+    <li><strong>Çıktı formatı.</strong> Nasıl sunulmasını istiyorum?</li>
+    <li><strong>Görev.</strong> Şimdi asıl iş.</li>
+  </ol>
+
+  <h3>Üç soru testi</h3>
+
+  <p>Bir promptu göndermeden önce kendine üç soru sor:</p>
+
+  <ul>
+    <li><strong>Neden?</strong> Çıktıyı kim, ne için kullanacak?</li>
+    <li><strong>Ne biliyorsun?</strong> Hangi geçmiş, hangi veri verdim?</li>
+    <li><strong>Neye benzesin?</strong> Tablo mu, liste mi, paragraf mı?</li>
+  </ul>
+
+  <p>Bu üçü tamamsa, prompt yola çıkmaya hazır.</p>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Lansman 6P</div>
+    <p><strong>Persona:</strong> "Sen kıdemli bir B2B pazarlama stratejistisin."</p>
+    <p><strong>Purpose:</strong> "30 günlük lansman planı çıkarmak."</p>
+    <p><strong>Profile:</strong> "Hedef kitle: KOBİ İK karar vericileri."</p>
+    <p><strong>Proof:</strong> "Ürün özellikleri: ..., geçen lansmandan öğrenilenler: ..."</p>
+    <p><strong>Parameters:</strong> "Haftaya bölünmüş, her hafta en fazla 3 ana aksiyon."</p>
+    <p><strong>Presentation:</strong> "Tablo halinde, her hafta sonunda mini özet paragraf."</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Bu hafta gönderdiğin bir e-posta için 6P'nin altı kalemini kâğıt üzerinde doldur. Hangi P'yi otomatik atladığını gör. Senin gelişim alanın orası.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 3: CLAUDE DESKTOP MODLAR -->
+<!-- ============================================================ -->
+<section id="m2-b3">
+  <div class="chapter-tag">Modül 2 · Bölüm 3</div>
+  <h2>Claude Desktop: Chat, Cowork, Code</h2>
+
+  <p>Claude'a tarayıcıdan, telefondan ve masaüstü uygulamasından erişebilirsin. Masaüstü uygulaması üç farklı mod sunuyor. Bunları bilmek, hangi tip iş için hangi modu açacağını seçmeni kolaylaştırır.</p>
+
+  <h3>Chat</h3>
+
+  <p>Tarayıcıdan kullandığın Claude'un birebir aynısı, üstüne masaüstüne özgü birkaç şey:</p>
+
+  <ul>
+    <li><strong>Quick entry.</strong> Mac'te Option tuşuna iki kez basarak Claude'u ne yapıyorsan onun üzerine getirebilirsin. Pencere üstte kalır, uygulamalar arasında geçiş yaparken bile elinin altında.</li>
+    <li><strong>Ekran görüntüsü ve pencere paylaşma.</strong> Bir pencerenin görüntüsünü doğrudan paylaş. Tarif etmekten hızlı, daha kesin.</li>
+    <li><strong>Dictation.</strong> Yazmak yerine konuşarak anlatabilirsin. Yüksek sesli düşünürken, klavyeden uzakken faydalı.</li>
+    <li><strong>Desktop connectors.</strong> Bilgisayarındaki yerel araçlara ve servislere connector üzerinden erişir.</li>
+  </ul>
+
+  <p>Chat, hızlı sorular, beyin fırtınası, taslak ve karşılıklı çalışma için en uygun mod.</p>
+
+  <h3>Cowork</h3>
+
+  <p>Cowork, gerçek emek isteyen işler için: çoklu kaynaktan bilgi toplamak, bunu anlamlandırmak, bitmiş bir şey üretmek. Cowork moddaki Claude tek bir promptun cevabını veren bir bot değil. Bir hedef, kaynaklara erişim ve yeterli süre verdiğinde sürdürülebilir bir çıktı çıkaran bir partner.</p>
+
+  <ul>
+    <li><strong>Folder access.</strong> Bilgisayarındaki bir klasörü gösterirsin. Claude oradakini okur, neyin işine yarayacağına karar verir, bitmiş işi aynı yere kaydeder.</li>
+    <li><strong>Scheduled tasks.</strong> Her sabah çalışacak bir brifing, haftalık bir özet, sabah inbox triajı gibi tekrarlayan işleri zaman çizelgesine bağlar.</li>
+    <li><strong>Subagents.</strong> Karmaşık işleri kendi içinde parçalara böler. Her parçayı arka planda çalışan başka bir worker'a verir, sonra hepsini birleştirip sana tek bir teslim eder.</li>
+    <li><strong>Projects.</strong> İlgili işleri kendi dosyaları, talimatları ve hafızasıyla bir çalışma alanında topla.</li>
+    <li><strong>Plugins.</strong> Tek başına yapamadığı işleri (canlı finansal veri çekmek, şirket içi bilgi tabanında arama yapmak gibi) plugin'lerle yapar.</li>
+  </ul>
+
+  <h3>Code</h3>
+
+  <p>Yazılım geliştirme için. Kodu okur, yazar, değiştirir, komut çalıştırır. Yerel olarak bilgisayarındaki bir projede ya da uzak (cloud) bir GitHub deposunda çalışabilir.</p>
+
+  <p>Üç etkileşim modu var:</p>
+
+  <ul>
+    <li><strong>Ask.</strong> Her değişikliği önce sana sorar, onay bekler.</li>
+    <li><strong>Code.</strong> Dosya değişikliklerini doğrudan yapar, terminal komutu için sorar.</li>
+    <li><strong>Plan.</strong> İşe başlamadan önce yaklaşımını anlatır, onay alınca ilerler.</li>
+  </ul>
+
+  <h3>Üç modu yan yana</h3>
+
+  <table>
+    <thead>
+      <tr><th></th><th>Chat</th><th>Cowork</th><th>Code</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Şuna iyi gelir</strong></td><td>Hızlı sorular, beyin fırtınası, taslak</td><td>Araştırma, analiz, bitmiş doküman üretmek</td><td>Yazılım geliştirme</td></tr>
+      <tr><td><strong>Yetenekler</strong></td><td>Quick entry, dictation, connector</td><td>Klasör erişimi, plugin, subagent, scheduled task</td><td>Ask/Code/Plan modları, görsel diff, git</td></tr>
+      <tr><td><strong>Çalışma yeri</strong></td><td>Sohbet penceresi</td><td>Korumalı yerel alan</td><td>Yerel veya cloud</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu</div>
+    <p>Cowork ve Code aslında aynı motor üzerinde çalışıyor (Claude Code). İkisi de bilgisayarında yerel çalışıyor, bağımsız iş üretebiliyor, uzun görevleri sürdürebiliyor. Fark, hangi tip işe odaklandıkları. Cowork dosya ve doküman üretimine, Code yazılım geliştirmeye.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 4: PROJECTS -->
+<!-- ============================================================ -->
+<section id="m2-b4">
+  <div class="chapter-tag">Modül 2 · Bölüm 4</div>
+  <h2>Projects: Kalıcı Çalışma Alanları</h2>
+
+  <p>Standart bir sohbet arayüzünde her yeni konuşma boş bir sayfayla başlar. Geçen hafta kurduğun çerçeveyi, paylaştığın dokümanları, ton kurallarını tekrar yazmak zorunda kalırsın. <strong>Projects</strong>, bu sorunu çözüyor.</p>
+
+  <h3>Bir Project iki şeyden oluşur</h3>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Project yapısı: Instructions + Files paylaşılır, sohbetler ayrı kalır">
+      <!-- Outer container -->
+      <rect x="40" y="20" width="680" height="240" rx="8" fill="#FAF6EE" stroke="#1B3A5C" stroke-width="1.5"/>
+      <text x="60" y="50" font-family="Helvetica" font-size="11" font-weight="bold" fill="#9C7F3D" letter-spacing="2">PROJECT: "Q4 LANSMAN"</text>
+      <!-- Instructions box -->
+      <rect x="60" y="70" width="300" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+      <rect x="60" y="70" width="4" height="80" fill="#C8A85F"/>
+      <text x="80" y="92" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Instructions</text>
+      <text x="80" y="112" font-family="Helvetica" font-size="11" fill="#5C5C5C">Çalışma stili, marka tonu,</text>
+      <text x="80" y="128" font-family="Helvetica" font-size="11" fill="#5C5C5C">hedef kitle, kaçınılacak</text>
+      <text x="80" y="144" font-family="Helvetica" font-size="11" fill="#5C5C5C">ifadeler, kararlar.</text>
+      <!-- Files box -->
+      <rect x="400" y="70" width="300" height="80" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+      <rect x="400" y="70" width="4" height="80" fill="#C8A85F"/>
+      <text x="420" y="92" font-family="Georgia" font-weight="bold" font-size="14" fill="#1B3A5C">Files</text>
+      <text x="420" y="112" font-family="Helvetica" font-size="11" fill="#5C5C5C">Ürün dokümanı,</text>
+      <text x="420" y="128" font-family="Helvetica" font-size="11" fill="#5C5C5C">rakip analizi, önceki</text>
+      <text x="420" y="144" font-family="Helvetica" font-size="11" fill="#5C5C5C">rapor, marka kılavuzu.</text>
+      <!-- Chats -->
+      <rect x="60" y="180" width="150" height="50" rx="4" fill="#EEF4F8" stroke="#6FA0C2" stroke-width="1"/>
+      <text x="135" y="210" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Sohbet: Mesaj</text>
+      <rect x="225" y="180" width="150" height="50" rx="4" fill="#EEF4F8" stroke="#6FA0C2" stroke-width="1"/>
+      <text x="300" y="210" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Sohbet: Sosyal</text>
+      <rect x="390" y="180" width="150" height="50" rx="4" fill="#EEF4F8" stroke="#6FA0C2" stroke-width="1"/>
+      <text x="465" y="210" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Sohbet: Basın</text>
+      <rect x="555" y="180" width="150" height="50" rx="4" fill="#EEF4F8" stroke="#6FA0C2" stroke-width="1"/>
+      <text x="630" y="210" text-anchor="middle" font-family="Helvetica" font-size="11" fill="#1F1F1F">Sohbet: İç duyuru</text>
+      <text x="380" y="252" text-anchor="middle" font-family="Helvetica" font-size="10" font-style="italic" fill="#5C5C5C">Instructions ve Files her sohbette paylaşılır, sohbetlerin kendisi ayrı kalır</text>
+    </svg>
+    <div class="diagram-caption">Şekil 7 — Bir Project'in yapısı.</div>
+  </div>
+
+  <h3>Projects'in işe yaradığı senaryolar</h3>
+
+  <ul>
+    <li>Çok haftalık proje yönetimi (sprint, karar, paydaş)</li>
+    <li>İçerik üretimi (blog, sosyal medya, hep aynı marka)</li>
+    <li>Müşteri başına çalışma (her müşteri için ayrı Project)</li>
+    <li>Uzun karar süreçleri (vendor seçimi, organizasyon değişikliği)</li>
+    <li>Öğrenme yolculuğu (haftalar süren konu derinleştirme)</li>
+  </ul>
+
+  <h3>Bir Project nasıl kurulur?</h3>
+
+  <p>Üç adım yetiyor:</p>
+
+  <ol>
+    <li><strong>Project'i aç.</strong> "+ New Project" deyip ad ver. "Q4 Lansman", "Marka Sesi Kütüphanesi", "Müşteri X" gibi açıklayıcı isimler kullan.</li>
+    <li><strong>Instructions ekle.</strong> Bu projenin bağlamı, ton tercihi, kaçınılacak ifadeler, çıktı stilleri. Her yeni sohbet bu talimatla başlar.</li>
+    <li><strong>Files yükle.</strong> Marka kılavuzları, önceki raporlar, şablonlar, geçmiş veriler. PDF, DOCX, CSV, TXT, HTML dahil. Google Drive bağlantısı da var.</li>
+  </ol>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu — Dosya isimlendirme</div>
+    <p>Dosyalarına açıklayıcı isimler ver. Claude dosya isminden ne hakkında olduğunu çıkarıyor. "Q4-2025-Marka-Kilavuzu.pdf" "document1.pdf"den çok daha işine yarar.</p>
+  </div>
+
+  <h3>RAG modu: çok büyük bilgi tabanı yüklediğinde</h3>
+
+  <p>Projects, çok dosya yüklediğinde otomatik olarak <em>retrieval augmented generation</em> moduna geçiyor. Tüm içeriği aynı anda belleğe yüklemek yerine, her sorunda en alakalı parçaları akıllıca getiriyor. Bu sayede proje kapasitesi 10 katına kadar büyüyor, üstelik cevap kalitesi düşmüyor.</p>
+
+  <h3>Claude Projects vs ChatGPT Projects</h3>
+
+  <table>
+    <thead>
+      <tr><th>Boyut</th><th>Claude Projects</th><th>ChatGPT Projects</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Yaklaşım</td><td>Paylaşılan düşünme alanı</td><td>Klasör / organizasyon</td></tr>
+      <tr><td>Eski karar etkisi</td><td>Yeni cevapları doğrudan etkiler</td><td>Daha hafif etkili</td></tr>
+      <tr><td>Uzun proje için</td><td>Avantajlı</td><td>Yeterli</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Project kurulumu</div>
+    <p>"Q4 Lansman" Project'ini aç. Instructions'a ürün özet, marka tonu, kaçınılacak ifadeler, hedef segment yaz. Files'a önceki lansman raporu, rakip analizi, mesaj çerçevesi yükle. Sonraki tüm sohbetler bu temel bağlamı paylaşacak.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Şu an yürüttüğün bir proje için Claude Project açsan Instructions kısmına ne yazardın? Üç-dört madde halinde taslakla.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 5: ARTIFACTS -->
+<!-- ============================================================ -->
+<section id="m2-b5">
+  <div class="chapter-tag">Modül 2 · Bölüm 5</div>
+  <h2>Artifacts: Görünür Çıktılar</h2>
+
+  <p>Claude'un Artifacts özelliği, çıktıyı bir sohbet baloncuğu olmaktan çıkarıp görsel, etkileşimli ve düzenlenebilir bir öğeye dönüştürüyor. Sohbet penceresinden çıkmadan şunları üretebilirsin:</p>
+
+  <ul>
+    <li>Tek sayfalık landing page</li>
+    <li>Form veya anket arayüzü</li>
+    <li>Akış şeması, mind map, organizasyon şeması, Mermaid diyagramı</li>
+    <li>Tablo, dashboard, etkileşimli grafik</li>
+    <li>Biçimlendirilmiş doküman (markdown, Word, PDF, Excel, PowerPoint)</li>
+    <li>SVG illüstrasyon, logo, ikon</li>
+    <li>React component (basit hesap makinesi, oyun, veri görselleştirme)</li>
+  </ul>
+
+  <h3>Claude artifact ne zaman üretir?</h3>
+
+  <p>Çıktı belli kriterleri karşıladığında Claude otomatik olarak artifact üretiyor:</p>
+
+  <ul>
+    <li>Anlamlı ve kendi başına ayakta duracak büyüklükte (genelde 15 satır üstü)</li>
+    <li>Üzerinde tekrar tekrar çalışman muhtemel bir şey</li>
+    <li>Sohbetin kendisinden bağımsız olarak kullanılabilecek karmaşık içerik</li>
+    <li>Sonra başvurmak isteyeceğin bir şey</li>
+  </ul>
+
+  <p>Otomatik üretmediği yerde direkt isteyebilirsin: <em>"Bunu artifact olarak çıkar."</em></p>
+
+  <h3>İki görünüm modu</h3>
+
+  <div class="compare">
+    <div>
+      <h4>Preview</h4>
+      <p>Çıktının görsel hali. Tarayıcıdaki gibi görüyorsun.</p>
+    </div>
+    <div>
+      <h4>Code</h4>
+      <p>Altta yatan kaynak. HTML, CSS, JS ile uğraşmak isteyenler için.</p>
+    </div>
+  </div>
+
+  <h3>Hedefli düzenleme: parçayı değiştir, bütünü bozma</h3>
+
+  <p>Artifacts'in gerçek gücü <strong>cerrahi düzenleme</strong>. Bir paragrafı, bir bölümü işaretleyip "burayı şöyle değiştir" diyebilirsin. Claude sadece o kısmı düzenler. Diğer her şey aynı kalır. Bu, "tüm dosyayı yeniden ürettim, kayıp değişiklikler" sorununu çözüyor.</p>
+
+  <h3>Sürüm geçmişi</h3>
+
+  <p>Her güncelleme otomatik bir sürüm yaratır. "Üç tur önceki haline geri dön" diyebilirsin. Bu, denemeleri risksiz kılıyor.</p>
+
+  <h3>Paylaşma ve yayınlama</h3>
+
+  <ul>
+    <li><strong>Kopyala / indir.</strong> Kişisel kullanım veya başka kanaldan paylaşmak için.</li>
+    <li><strong>Kurum içi paylaşım (Team / Enterprise).</strong> Artifact organizasyonun içinde kalır.</li>
+    <li><strong>Yayınla (Free, Pro, Max).</strong> Linki olan herkes erişebilir. Sadece seçilen sürüm yayınlanır, sohbet özel kalır. Başkaları senin artifact'ini kendi sohbetlerinde "remix" edebilir.</li>
+  </ul>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — İç bilgilendirme sayfası</div>
+    <p>Lansman için bir Artifact olarak tek sayfalık iç bilgilendirme: üstte ürünün tek cümlelik vaadi, ortada üç temel özellik (ikon ve kısa açıklama), altta lansman tarihleri ve ekip rolleri. Sohbet penceresinden çıkmadan, anında.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Bugün iş gününde gördüğün bir raporu, akışı veya tabloyu düşün. Bunun bir Artifact olarak görseli nasıl olurdu? Tablo mu, akış şeması mı, tek sayfa mı?</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 6: SKILLS -->
+<!-- ============================================================ -->
+<section id="m2-b6">
+  <div class="chapter-tag">Modül 2 · Bölüm 6</div>
+  <h2>Skills: Tekrarlayan Süreçleri Otomatikleştirme</h2>
+
+  <p>Skills, Claude'un belirli işleri hep aynı titizlikte yapması için sana özel "uzmanlık paketleri" oluşturduğun yapı. Talimat, betik ve kaynak dosyalardan oluşuyor. Claude bir işin Skill kapsamına girdiğini fark ettiğinde paketi otomatik yüklüyor.</p>
+
+  <p>Excel oluşturma, PowerPoint hazırlama, Word ya da PDF üretme. Aslında bu yetenekler arka planda zaten Skills üzerinden çalışıyor. Skills'in asıl gücü ise senin kendi süreçlerini paket haline getirmen.</p>
+
+  <h3>İki tip Skill</h3>
+
+  <ul>
+    <li><strong>Anthropic Skills.</strong> Anthropic'in hazırladığı ve baktığı Skills. Excel, Word, PowerPoint, PDF dokümanlarını üretmek için. Ücretli tüm kullanıcılara açık. Claude bunları kendiliğinden çağırır.</li>
+    <li><strong>Custom Skills.</strong> Sen veya organizasyonun için özel hazırladığın Skills. Kendi marka kılavuzunu uygulayan, toplantı notlarını belirli formata sokan, üç aylık varyans analizi yapan tarzında.</li>
+  </ul>
+
+  <h3>Skills'i nasıl açarsın?</h3>
+
+  <p>Skills şu an Pro, Max, Team ve Enterprise planlarında bir önizleme özelliği. Çalışması için kod yürütme ve dosya oluşturma izinleri gerekiyor.</p>
+
+  <ol>
+    <li>Settings &gt; Capabilities yoluna git.</li>
+    <li>"Code execution and file creation" açık olsun.</li>
+    <li>Skills bölümünde istediğin Skill'i aç ya da kapa.</li>
+  </ol>
+
+  <h3>Kendi Skill'ini yazmak</h3>
+
+  <p>En kolay yol, Claude ile konuşarak. Kod yazmana, dosya oluşturmana gerek yok. Şu adımlar:</p>
+
+  <ol>
+    <li>Yeni bir sohbet aç. "Üç aylık iş değerlendirmesi yazmak için bir Skill oluşturmak istiyorum" gibi bir şey söyle.</li>
+    <li>Claude sorular sorar: Bu Skill ne yapsın? İyi çıktı neye benzer? Ne zaman kullanırsın?</li>
+    <li>Şablonların, marka kılavuzun varsa yükle. Bunlar Skill'in beslendiği malzeme.</li>
+    <li>Kaydet. Claude sana doğru yapılandırılmış bir dosya üretir. Yüklediğin anda Skill kullanıma hazır.</li>
+  </ol>
+
+  <h3>Skills vs Projects</h3>
+
+  <p>İkisi de Claude'a daha çok bağlam veriyor. Ayrım net:</p>
+
+  <table>
+    <thead>
+      <tr><th></th><th>Projects</th><th>Skills</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Amaç</strong></td><td>Bilgi sakla</td><td>Süreç tanımla</td></tr>
+      <tr><td><strong>İyi olduğu yer</strong></td><td>Uzun vadeli bağlam, referans, ekip işbirliği</td><td>Tekrar eden iş, çok adımlı süreç, tutarlı yöntem</td></tr>
+      <tr><td><strong>Örnek</strong></td><td>Müşteri hub'ı, araştırma kütüphanesi</td><td>Marka rehberi uygulayan, blog taslağı çıkaran, PDF üreten</td></tr>
+      <tr><td><strong>Mantık</strong></td><td>"Ne biliyor?"</td><td>"Nasıl yapıyor?"</td></tr>
+    </tbody>
+  </table>
+
+  <p>Projects bilgi saklar, Skills iş yapar. İkisi birlikte de çalışır. Bir "müşteri görüşmesi hazırlığı" Skill'i, müşteri profillerinin saklandığı Project'in bilgi tabanından çekebilir. Project <em>ne</em>, Skill <em>nasıl</em>.</p>
+
+  <div class="box warn">
+    <div class="box-title">Güvenlik</div>
+    <p>Custom Skills içinde çalıştırılabilir kod barındırabilir. Sadece güvendiğin kaynaklardan yüklediğin Skill'leri kullan. Dışarıdan gelen bir Skill yüklediğinde içeriğini önce gözden geçir.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 7: CONNECTORS -->
+<!-- ============================================================ -->
+<section id="m2-b7">
+  <div class="chapter-tag">Modül 2 · Bölüm 7</div>
+  <h2>Connectors: Claude'u İş Akışına Bağlamak</h2>
+
+  <p>Connectors, Claude'a senin her gün kullandığın araçlara erişim veren bağlantılar. Doğrudan sohbet içinden Google Drive, Notion, Slack, Asana, Linear, Gmail, Stripe ve daha pek çok servisle çalışabilir.</p>
+
+  <h3>Neden önemli?</h3>
+
+  <p>Connector olmadan her sohbet sıfırdan başlar. Claude senin verilerini, dosyalarını, mesajlarını görmez. Connector ile asistandan bilgili bir iş arkadaşına dönüşüyor. Senin neye baktığını, hangi projenin nerede olduğunu görüyor.</p>
+
+  <p>Erişim düzeyine göre Claude şunları yapabilir: dosyalarını arar, doküman çeker, veri analiz eder, yeni içerik üretir, kayıt günceller, görev oluşturur.</p>
+
+  <h3>İki tip connector</h3>
+
+  <ul>
+    <li><strong>Web connectors.</strong> Cloud servisleri: Gmail, Notion, Slack, Asana, Linear, Stripe ve daha fazlası.</li>
+    <li><strong>Desktop extensions.</strong> Bilgisayarındaki yerel araçlar: yerel dosya erişimi, tarayıcı kontrolü, Figma gibi yerel uygulamalar. Claude Desktop uygulaması üzerinden çalışır.</li>
+  </ul>
+
+  <h3>MCP: connector'ların altındaki standart</h3>
+
+  <p>Connector'ları mümkün kılan şey <strong>Model Context Protocol (MCP)</strong>. Yapay zekânın USB-C'si gibi düşünebilirsin. Tek bir standart sayesinde Claude, yüzlerce farklı uygulamaya aynı arayüzle bağlanabiliyor. Açık bir standart olduğu için herhangi bir geliştirici kendi servisine MCP connector yazabilir.</p>
+
+  <h3>Bağlantı kurmak</h3>
+
+  <ol>
+    <li><a href="https://claude.ai/directory">claude.ai/directory</a> adresine git, ya da sohbet altındaki "+" işaretinden Connectors'ı seç.</li>
+    <li>İstediğin connector'a "Connect" de.</li>
+    <li>Servisin giriş sayfasında kimlik doğrulamasını yap.</li>
+    <li>İstenilen izinleri inceleyip onayla.</li>
+    <li>"Bana [araç adı]'ndan bir şey gösterebilir misin?" diye basit bir testle bağlantıyı dene.</li>
+  </ol>
+
+  <h3>Pratik kullanım örnekleri</h3>
+
+  <div class="deflist">
+    <dl>
+      <dt>Proje yönetimi (Asana, Linear, Jira)</dt>
+      <dd>"Bu hafta sonuçlandırılması gereken en yüksek öncelikli görevler neler?"</dd>
+      <dd>"Q4 bütçesi için yeni görev aç."</dd>
+
+      <dt>İletişim (Slack, Gmail)</dt>
+      <dd>"Tedarikçi sözleşmesini konuştuğumuz e-posta zincirini bul."</dd>
+      <dd>"Dünkü #pazarlama kanalındaki son mesaja yanıt taslağı yaz."</dd>
+
+      <dt>Doküman (Notion, Google Drive, Confluence)</dt>
+      <dd>"Marka tonu kılavuzumuzu çıkar."</dd>
+      <dd>"Geçen haftaki ürün toplantısının notlarını özetle."</dd>
+
+      <dt>İş araçları (Stripe, PayPal, Salesforce)</dt>
+      <dd>"Son çeyrekteki gelir trendini göster."</dd>
+      <dd>"Acme Corp fırsatının durumu nedir?"</dd>
+    </dl>
+  </div>
+
+  <div class="box warn">
+    <div class="box-title">İzin ve güvenlik</div>
+    <p>Bir connector eklediğinde Claude'a o servisteki veriyi okuma ve kimi zaman değiştirme yetkisi vermiş olursun. İzinler ihtiyaca göre özelleştirilmiş, dilediğin zaman tek tek kapatabilirsin. Hassas servislerde önce yetki düzeyini gözden geçir, sonra bağla. Kurum hesabıysa İK veya BT politikası neyse onunla uyumlu hareket et.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 8: DOSYA, METİN VE ANALİZ -->
+<!-- ============================================================ -->
+<section id="m2-b8">
+  <div class="chapter-tag">Modül 2 · Bölüm 8</div>
+  <h2>Dosya, Metin ve Analiz Senaryoları</h2>
+
+  <h3>Uzun dokümanı kavrama</h3>
+
+  <p>Claude uzun belgeleri parça parça değil, bütün olarak işler. 40-100 sayfalık raporda klasik özet yerine şu tip soruları sor:</p>
+
+  <ul>
+    <li>"Bu raporun yaptığı <strong>en önemli üç öneri</strong> nedir?"</li>
+    <li>"Yazar hangi varsayımları <strong>dile getirmeden</strong> kabul ediyor?"</li>
+    <li>"Önerilerin <strong>gizli kalan riski</strong> ne olabilir?"</li>
+    <li>"Bu raporun <strong>karşı argümanı</strong> ne olabilir?"</li>
+  </ul>
+
+  <h3>Doküman tutarlılık kontrolü</h3>
+
+  <p>Uzun dokümanlarda sık karşılaşılan sorunlar: terim tutarsızlığı, sayı çelişkileri, bölümler arası farklı ifadeler. Tek tek okurken görünmezler, ama bütünün kalitesini düşürürler.</p>
+
+  <div class="box good">
+    <div class="box-title">İyi prompt</div>
+    <p>"Bu 30 sayfalık raporu okuduktan sonra terim tutarsızlıkları, sayısal çelişkiler ve farklı bölümler arasında birbiriyle çatışan iddialar varsa listele."</p>
+  </div>
+
+  <h3>Birden çok kaynaktan sentez</h3>
+
+  <p>Sentez, üç ayrı belgenin üç ayrı özetini yazmak değil. Sentez <strong>örüntü görmektir</strong>:</p>
+
+  <ul>
+    <li>"Bu üç kaynak birbiriyle nasıl konuşuyor?"</li>
+    <li>"Hangi noktada anlaşıyorlar, hangi noktada çelişiyorlar?"</li>
+    <li>"Üçünün birleşiminden çıkan, hiçbirinin tek başına söylemediği bir sonuç var mı?"</li>
+  </ul>
+
+  <h3>Eksiği görmek</h3>
+
+  <p>Claude'un az kullanılan, en güçlü tarafı: bir dokümanda <strong>dile getirilmemiş varsayımları</strong> görmek. Karar süreçlerinde değerli. Çünkü kararı sabote eden çoğunlukla "söylenmeyen"dir.</p>
+
+  <h3>Dosya türü ve prompt eşleşmesi</h3>
+
+  <table>
+    <thead>
+      <tr><th>Dosya</th><th>İyi prompt örneği</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>PDF (rapor)</td><td>"Risk bölümünü 5 maddede özetle, ardından raporda yazılı olmayan 2 ek risk ekle."</td></tr>
+      <tr><td>Excel / CSV</td><td>"Q3'te düşüş yaşayan üç bölgeyi belirle, her biri için 3 olası açıklama öner."</td></tr>
+      <tr><td>Word / sözleşme</td><td>"Tedarikçi lehine asimetrik olabilecek 3 maddeyi işaretle."</td></tr>
+      <tr><td>Görsel</td><td>"Bu pazarlama görselindeki 3 tasarım problemini ve birer alternatif öner."</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu</div>
+    <p>"Özetle" demek en zayıf prompttur. Onun yerine <em>"şu açıdan değerlendir"</em>, <em>"şu paydaşa göre yorumla"</em>, <em>"eksik kalan ne?"</em> diye sor. Aynı doküman, soru değişince bambaşka cevaplar verir.</p>
+  </div>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Önceki rapor analizi</div>
+    <p>Önceki lansmana ait 60 sayfalık raporu yükle. "Tekrar yapmamamız gereken üç hata, tekrarlamamız gereken üç başarı, raporda hiç işlenmemiş ama kritik olabilecek iki konu" sorularını birlikte sor.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Bu hafta yüklemeyi planladığın bir dosyayı seç. "Özetle" yerine kullanabileceğin <strong>üç farklı soru</strong> yaz.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 9: DÜŞÜNME ÇERÇEVELERİ -->
+<!-- ============================================================ -->
+<section id="m2-b9">
+  <div class="chapter-tag">Modül 2 · Bölüm 9</div>
+  <h2>Düşünme Çerçeveleri ile Claude</h2>
+
+  <p>Claude'u sadece içerik üreteci olarak değil, <strong>düşünme partneri</strong> olarak kullanmanın yolu çerçeveden geçer. Çerçeve, Claude'un yapılandırılmış cevap üretmesini sağlar.</p>
+
+  <h3>Beş klasik iş çerçevesi</h3>
+
+  <table>
+    <thead>
+      <tr><th>Çerçeve</th><th>Ne için?</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>SWOT</strong></td><td>Güçlü ve zayıf yön, fırsat ve tehdit</td></tr>
+      <tr><td><strong>VRIO</strong></td><td>İç kabiliyetlerin rekabet avantajı</td></tr>
+      <tr><td><strong>Porter 5 Forces</strong></td><td>Dış rekabet baskısı</td></tr>
+      <tr><td><strong>BCG Matrix</strong></td><td>Ürün portföyü segmentasyonu</td></tr>
+      <tr><td><strong>TOWS</strong></td><td>SWOT bulgularını eyleme dönüştürme</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tek, iki ve sıralı çerçeve</h3>
+
+  <ul>
+    <li><strong>Tek çerçeve:</strong> Hızlı bir bakış. "Şu işi SWOT'a göre değerlendir."</li>
+    <li><strong>İki çerçeve (paralel):</strong> İç ve dış birlikte. "VRIO + Porter 5 Forces."</li>
+    <li><strong>Sıralı (zincir):</strong> Çıktı bir sonrakine input olur. "BCG → Scenario Planning → TOWS."</li>
+  </ul>
+
+  <h3>Dört derin düşünme tekniği</h3>
+
+  <ul>
+    <li><strong>Cross-domain analiz.</strong> Aynı konuyu birden çok alandan birden inceleme.</li>
+    <li><strong>Sistemli düşünme.</strong> Parçaların birbirini nasıl etkilediği.</li>
+    <li><strong>Nedensel zincir.</strong> A → B → C ilişkisi.</li>
+    <li><strong>Dalga etkileri ve ikinci sıra sonuçlar.</strong> İlk etkiden sonra ne gelir?</li>
+  </ul>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Sıralı çerçeve</div>
+    <p>"Ürünümüz için önce SWOT yap. Ardından Porter 5 Forces ile dış rekabeti analiz et. Son olarak TOWS ile önümüzdeki 60 günde alınacak somut aksiyon listesi çıkar."</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Şu an kafanı meşgul eden bir karar seç (iş veya kişisel). Hangi çerçeve buna en uygun? Üç cümleyle gerekçelendir.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 10: YARATICILIK -->
+<!-- ============================================================ -->
+<section id="m2-b10">
+  <div class="chapter-tag">Modül 2 · Bölüm 10</div>
+  <h2>Yaratıcılığı Genişletme Teknikleri</h2>
+
+  <p>Claude'un yaratıcılığı doğaçlamadan değil, iyi tasarlanmış çerçeveden besleniyor. Aşağıdaki altı teknik en sık kullanılan tetikleyiciler:</p>
+
+  <table>
+    <thead>
+      <tr><th>Teknik</th><th>Tipik prompt</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>"Ya ... olsaydı?"</td><td>"Müşteri hizmetleri bütçesinin yarısıyla çalışmak zorunda kalsaydık, hangi üç şeyi farklı yapardık?"</td></tr>
+      <tr><td>Bağlantısız kavramları birleştirme</td><td>"Bir kafeyi bir kütüphane gibi yönetseydik?"</td></tr>
+      <tr><td>Varsayımları tersine çevirme</td><td>"Adayların şirket seçtiği değil, şirketlerin başvurduğu bir süreç tasarlasak?"</td></tr>
+      <tr><td>Metafor</td><td>"Müşteri sadakat programımız bir bahçe olsa hangi köşesi ihmal edilmiş?"</td></tr>
+      <tr><td>Yapay kısıt</td><td>"5 kelime, 3 renk, 1 gif ile tanıtsaydık?"</td></tr>
+      <tr><td>Çoklu bakış açısı</td><td>"Bu politikayı CFO, orta yönetici, yeni çalışan, uzun süreli çalışan ve hukuk danışmanı açılarından değerlendir."</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Yaratıcılık tetikleyici</div>
+    <p>"Ya hiç dijital kanal kullanamasaydık, sadece insan-insan iletişimle bu lansmanı yapsaydık nasıl yapardık?" Çıkan fikirler dijital kampanyaya geri besleme verebilir.</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Üzerinde çalıştığın bir konuyu seç. Altı teknikten birini dene. İki dakikada gelen en şaşırtıcı fikir hangisi?</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 11: YAZMA, REVİZYON, TON -->
+<!-- ============================================================ -->
+<section id="m2-b11">
+  <div class="chapter-tag">Modül 2 · Bölüm 11</div>
+  <h2>Yazma, Revizyon ve Ton</h2>
+
+  <p>Claude'un en güçlü olduğu işlerden biri "metin üretmek" değil, "metni iyileştirmek". Yazmanın gerçek işi revizyonda olur.</p>
+
+  <h3>Taslağı değil yazıyı geliştirme</h3>
+
+  <p>Yazdığın bir metni Claude'a verip "Bunu yeniden yaz" demek yerine <strong>"İyileştir, ama benim sesimi koru"</strong> demek farklı sonuç doğuruyor. İkinci çerçeveyle Claude cerrahi olarak ele alır. Senin tonunu korur.</p>
+
+  <div class="box">
+    <div class="box-title">Kalıp prompt</div>
+    <p style="font-family:'Menlo',Consolas,monospace; font-size:13px;">"Aşağıdaki metni geliştir. Hedef: yapı ve netlik. Ses tonum aynı kalsın. Bilgiyi değiştirme. Eklersen 'düzeltme önerisi' olarak ayrı belirt."</p>
+  </div>
+
+  <h3>Yapı vs ton, birini değiştir diğerini koru</h3>
+
+  <p>Bir metin iki yoldan iyileşebilir:</p>
+
+  <ul>
+    <li><strong>Yapısal müdahale.</strong> Hangi bilgi önce, paragraf molaları, akış.</li>
+    <li><strong>Ton ayarı.</strong> İçerik aynı, samimiyet, sertlik, resmiyet değişir.</li>
+  </ul>
+
+  <p>Hangisini istediğini açıkça söyle. Karıştırma.</p>
+
+  <h3>Aynı bilgi, üç farklı seyirci</h3>
+
+  <div class="box">
+    <div class="box-title">Çok seyirci kalıbı</div>
+    <p>"Aşağıdaki proje güncellemesini üç versiyonda yaz: (1) doğrudan yöneticime sıcak ve hızlı, (2) yönetim kuruluna resmi ve sayısal, (3) müşteriye güven veren ve aksiyon-odaklı."</p>
+  </div>
+
+  <h3>Uzun dokümanda tutarlılık denetimi</h3>
+
+  <p>40 sayfalık bir raporda terim, tarih ve sayı tutarlılığını insan gözüyle yakalamak zor. Claude'a şunu de:</p>
+
+  <div class="box">
+    <div class="box-title">Tutarlılık denetimi</div>
+    <p style="font-family:'Menlo',Consolas,monospace; font-size:13px;">"Bu raporu uçtan uca oku. Şu üç açıdan denetle: (a) terim tutarlılığı, (b) sayıların bölümler arası uyumu, (c) ilk ve son bölümün birbiriyle çelişip çelişmediği."</p>
+  </div>
+
+  <h3>Hassas iletişim</h3>
+
+  <p>Kötü haber, geri bildirim, özür, kriz iletişimi. <strong>Dilin nasıl iniş yaptığı</strong> önemli. İyi prompt iki şeye dikkat çeker: ne söylendiği ve nasıl iniş yapması gerektiği.</p>
+
+  <div class="box good">
+    <div class="box-title">Örnek — Hassas iletişim promptu</div>
+    <p>"Üç ay üzerinde çalıştığımız bir projenin bütçe nedeniyle ertelendiğini ekibe duyurmam gerek. Mesajı net tut ama ekibin emeğini önemse. Belirsizlik varsa onu da kabul et. 'Yapılacak bir şey yok' tonundan kaçın. Üç paragraf."</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Yazdığın bir e-postanın son üç paragrafını al. Claude'a "Bilgiyi değiştirme, sadece tonu daha net ve daha az savunmacı yap" de. Aralarındaki farkı karşılaştır.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 12: KARAR ORTAĞI -->
+<!-- ============================================================ -->
+<section id="m2-b12">
+  <div class="chapter-tag">Modül 2 · Bölüm 12</div>
+  <h2>Karar Verme Ortağı Olarak Claude</h2>
+
+  <p>Önemli kararlarda Claude'un işlevi karar vermek <em>değil</em>. İşlevi senin için karardaki <strong>takasları görünür kılmak</strong>.</p>
+
+  <h3>Beş kullanışlı karar promptu</h3>
+
+  <table>
+    <thead>
+      <tr><th>Amaç</th><th>Prompt</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Takasları görmek</td><td>"A'yı seçersem ne kaybediyorum? B'yi seçersem ne kaybediyorum?"</td></tr>
+      <tr><td>Kör nokta açma</td><td>"Bu kararı verirken hangi açıyı tamamen unutmuş olabilirim?"</td></tr>
+      <tr><td>Üçüncü seçenek</td><td>"A mı B mi olarak çerçeveliyorum. Çerçeveyi kırsam ne yeni seçenek çıkar?"</td></tr>
+      <tr><td>Akıl yürütmeyi sınama</td><td>"Bu kararıma karşı en güçlü argüman nedir? Nezaket gösterme."</td></tr>
+      <tr><td>Gerçek vs varsayılan kısıt</td><td>"Şu kısıtlardan kaçı dışsal ve değişmez, kaçı benim kabul ettiğim?"</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Tarih kararı</div>
+    <p>"Lansman tarihini öne çekmek ya da geriye almak konusunda kararsızım. Önce takasları görünür kıl. Sonra en güçlü karşı argümanı yaz. En son hangi kısıtın gerçek olduğunu söyle."</p>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Vermen gereken bir kararı seç. "Bu kararıma karşı en güçlü argüman nedir, nezaket gösterme" promptunu Claude'a dene. Kendi reaksiyonuna dikkat et: rahatsız mı oldun, ikna mı oldun?</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - BÖLÜM 13: ÇOKLU ARAÇ EKOSİSTEMİ -->
+<!-- ============================================================ -->
+<section id="m2-b13">
+  <div class="chapter-tag">Modül 2 · Bölüm 13</div>
+  <h2>Çoklu Araç Ekosistemi</h2>
+
+  <p>Hiçbir araç tek başına her şey için en iyi değil. Profesyoneller araçları zincirleyerek kullanır. Standart bir akış:</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Topla, taslakla, derinleştir, yayınla akışı">
+      <g font-family="Helvetica" font-size="11" fill="#1F1F1F">
+        <rect x="20" y="50" width="160" height="100" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="20" y="50" width="4" height="100" fill="#C8A85F"/>
+        <text x="100" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">1. Topla</text>
+        <text x="100" y="96" text-anchor="middle" font-size="10" fill="#9C7F3D" font-weight="bold" letter-spacing="1">PERPLEXITY · GOOGLE</text>
+        <text x="100" y="116" text-anchor="middle" fill="#5C5C5C">Güncel veri,</text>
+        <text x="100" y="132" text-anchor="middle" fill="#5C5C5C">kaynak</text>
+        <text x="195" y="105" font-size="20" fill="#C8A85F">→</text>
+        <rect x="215" y="50" width="160" height="100" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="215" y="50" width="4" height="100" fill="#C8A85F"/>
+        <text x="295" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">2. Taslakla</text>
+        <text x="295" y="96" text-anchor="middle" font-size="10" fill="#9C7F3D" font-weight="bold" letter-spacing="1">CHATGPT · GEMINI</text>
+        <text x="295" y="116" text-anchor="middle" fill="#5C5C5C">İlk taslak,</text>
+        <text x="295" y="132" text-anchor="middle" fill="#5C5C5C">çerçeve</text>
+        <text x="390" y="105" font-size="20" fill="#C8A85F">→</text>
+        <rect x="410" y="50" width="160" height="100" rx="6" fill="#FFFFFF" stroke="#D9D2BF" stroke-width="1"/>
+        <rect x="410" y="50" width="4" height="100" fill="#C8A85F"/>
+        <text x="490" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#1B3A5C">3. Derinleştir</text>
+        <text x="490" y="96" text-anchor="middle" font-size="10" fill="#9C7F3D" font-weight="bold" letter-spacing="1">CLAUDE</text>
+        <text x="490" y="116" text-anchor="middle" fill="#5C5C5C">Sentez, eksik gör,</text>
+        <text x="490" y="132" text-anchor="middle" fill="#5C5C5C">akıl yürüt, cila</text>
+        <text x="585" y="105" font-size="20" fill="#C8A85F">→</text>
+        <rect x="605" y="50" width="135" height="100" rx="6" fill="#102542" stroke="#C8A85F" stroke-width="1"/>
+        <rect x="605" y="50" width="4" height="100" fill="#C8A85F"/>
+        <text x="672" y="76" text-anchor="middle" font-weight="bold" font-size="13" fill="#C8A85F">4. Yayınla</text>
+        <text x="672" y="96" text-anchor="middle" font-size="10" fill="#C8A85F" font-weight="bold" letter-spacing="1">COPILOT · WORD/PPT</text>
+        <text x="672" y="116" text-anchor="middle" fill="#FFFFFF">Son cila,</text>
+        <text x="672" y="132" text-anchor="middle" fill="#FFFFFF">format</text>
+      </g>
+    </svg>
+    <div class="diagram-caption">Şekil 8 — Topla, taslakla, derinleştir, yayınla akışı.</div>
+  </div>
+
+  <h3>Akışta dikkat edilecekler</h3>
+
+  <ul>
+    <li>Bir araçtan çıkan çıktıyı diğerine taşırken <strong>bağlamı yeniden netleştir</strong>: "Bu metni şu hedefe göre değerlendir veya iyileştir."</li>
+    <li>İki araca <strong>aynı soruyu paralel sormak</strong> bakış açısı zenginleştirmek için faydalı. Tek doğru cevap aramak için değil.</li>
+    <li>Copilot'un Office entegrasyonu <strong>son ciladan sonra</strong> anlamlı. Taslak aşamasında değil.</li>
+  </ul>
+
+  <div class="box good">
+    <div class="box-title">Bütünleşik Senaryo — Tam zincir</div>
+    <ol>
+      <li><strong>Perplexity:</strong> Sektör güncel trend, rakip lansman örnekleri.</li>
+      <li><strong>ChatGPT:</strong> 30 günlük takvim taslağı, viral başlık fikirleri.</li>
+      <li><strong>Claude:</strong> Mesaj çerçevesini derinleştir, segment versiyonları, basın bülteni.</li>
+      <li><strong>Copilot:</strong> PowerPoint sunumu, Outlook gönderim listesi.</li>
+    </ol>
+  </div>
+
+  <div class="box exer">
+    <div class="box-title">2 Dakikalık Egzersiz</div>
+    <p>Önümüzdeki haftaki bir görevini seç. Dört basamağı bu göreve uyarla. Hangi basamağı atlardın, hangisini iki kez kullanırdın?</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M2 - CHEAT SHEET -->
+<!-- ============================================================ -->
+<div class="cheat" id="m2-cheat">
+  <h3>Modül 2 — Hızlı Başvuru</h3>
+
+  <h4>Prompt İskeleti</h4>
+  <pre style="font-family:'Menlo',Consolas,monospace; font-size:13px; background:rgba(255,255,255,0.08); padding:14px 18px; border-radius:4px; color:#fff; margin:8px 0 20px;">ROL → AMAÇ → KİTLE → BAĞLAM → KISIT → FORMAT → GÖREV</pre>
+
+  <div class="grid">
+    <div>
+      <h4>Projects ne zaman?</h4>
+      <ul>
+        <li>Çok haftalık projeler</li>
+        <li>Aynı seyirciye sürekli üretim</li>
+        <li>Müşteri başına çalışma</li>
+        <li>Uzun karar süreci</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Artifacts ne zaman?</h4>
+      <ul>
+        <li>Tek sayfalık görsel rapor</li>
+        <li>Akış şeması, dashboard</li>
+        <li>Form, anket arayüzü</li>
+        <li>Sürüm sürüm değişiklik gereken doküman</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Skills ne zaman?</h4>
+      <ul>
+        <li>Tekrarlayan süreç</li>
+        <li>Sabit metodoloji</li>
+        <li>Marka kılavuzu uygulamak</li>
+        <li>Belirli format üretmek</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Connectors ne zaman?</h4>
+      <ul>
+        <li>Gerçek dosyalarla çalışırken</li>
+        <li>İş aracından veri çekmek</li>
+        <li>Mesaj, e-posta, görev yönetimi</li>
+        <li>Şirket bilgi tabanı araması</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px;">Karar promptları</h4>
+  <table>
+    <tbody>
+      <tr><td>Takas</td><td>"A vs B, ne kaybediyorum?"</td></tr>
+      <tr><td>Kör nokta</td><td>"Hangi açıyı unutuyorum?"</td></tr>
+      <tr><td>Üçüncü seçenek</td><td>"Çerçeveyi kırsam ne çıkar?"</td></tr>
+      <tr><td>Karşı argüman</td><td>"Nezaket gösterme."</td></tr>
+      <tr><td>Kısıt sınama</td><td>"Hangisi gerçek, hangisi varsayılan?"</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin-top:24px;">Çoklu araç akışı</h4>
+  <p style="margin:0;">Topla (Perplexity) → Taslakla (ChatGPT) → Derinleştir (Claude) → Yayınla (Copilot / Word / PPT)</p>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODÜL 3 — DIVIDER -->
+<!-- ============================================================ -->
+<section class="module-divider" id="modul-3">
+  <div class="kicker">Modül 3</div>
+  <h2>Kişisel Yapay Zekâ Yansımamızı Oluşturmak</h2>
+  <p>Bu modülde yapay zekânın sizin sesinizi, çalışma tarzınızı ve yazı tercihlerinizi daha iyi anlaması için kullanılacak kişisel kaynak dosyalarını hazırlıyoruz.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- M3 - BÖLÜM 1: KİŞİSEL YANSIMAMIZI BULMAK -->
+<!-- ============================================================ -->
+<section id="m3-b1">
+  <div class="chapter-tag">Modül 3 · Bölüm 1</div>
+  <h2>Kişisel Yansımamızı Bulmak — Taste Interviewer Yöntemi</h2>
+
+  <p>Herhangi bir yapay zekâ aracına, sanki bizim ağzımızdan çıkmış gibi düşüncelerimizi yazdırmak, bizim gibi davranmasını istemek ve bize benzer şeyler üretmesini istemek kabul edilebilir bir istek. Bunu yapmak teknik olarak zor değil; zor olan, yapay zekâya <strong>bizim nasıl düşündüğümüzü, yazdığımızı ve neyi sevmediğimizi</strong> yeterince açık anlatmak.</p>
+
+  <p>Bu rehberde iki temel dosya hazırlıyoruz: <strong>About Me / Voice Profile</strong> ve <strong>Anti-AI Writing Style</strong>. About Me dosyası size özel olmalı. Anti-AI dosyası ise hazır başlayabilir ama içinde sizin kişiselleştirmeniz gereken alanlar bulunur.</p>
+
+  <div class="box warn">
+    <div class="box-title">Dikkat</div>
+    <p>Bunları başlangıç düzeyinde bir ilk adım olarak düşünün. İçine ne kadar gerçek veri, örnek, düzeltme ve geri bildirim koyarsanız, modelden o kadar size yakın sonuç alırsınız. Bu dosyalar bir kez yazılıp unutulacak belgeler değil; zamanla güncellenen çalışma dosyalarıdır.</p>
+  </div>
+
+  <h3>Röportajla About Me dosyası oluşturmak</h3>
+
+  <p>Bu projenin ilk ve en önemli adımı kişisel sesi yapay zekânın anlayabileceği şekilde dışarı çıkarmak. Bunun için bir LLM ile uzun bir röportaj yapacağız. ChatGPT, Gemini veya başka bir araç kullanılabilir; ancak bu iş için Claude genellikle daha iyi sonuç verir.</p>
+
+  <p>Bu uzun bir röportajdır. Saatlerinizi alabilir, kredi limitiniz bitebilir, araya gün girebilir. Bu normal. Sohbete daha sonra geri dönüp devam edebilirsiniz.</p>
+
+  <div class="box">
+    <div class="box-title">Alternatif Yol</div>
+    <p>Bu kadar kişisel bilgiyi bir yapay zekâ ile paylaşmak istemiyorsanız veya kendi oluşturduğunuz bir persona üzerinden ilerlemek istiyorsanız, Bölüm 1B'deki manuel About Me şablonunu kullanabilirsiniz. Yine de önerilen yöntem röportajdır; çünkü iyi bir röportaj bazen kendimize bile söylemediğimiz tercihleri görünür kılar.</p>
+  </div>
+
+  <h3>Uzun cevapları daha kolay vermek için: sesle yazma</h3>
+
+  <p>Bu röportajı klavyeyle yazmak yorucu olabilir. Bu yüzden bilgisayarın her ekranında çalışan bir dikte aracı kullanmak işinizi hızlandırır. Kaynak notlarda önerilen araç <strong>Wispr Flow</strong>: konuştuğunuzu gerçek zamanlı metne dönüştürür ve aktif kullandığınız uygulamaya yazar.</p>
+
+  <ul>
+    <li>Dolgu kelimeleri temizleyebilir.</li>
+    <li>Yeni paragraf, sil, büyük harf gibi sesli komutları destekler.</li>
+    <li>Snippet kütüphanesiyle sık kullandığınız ifadeleri kısa kodla çağırabilir.</li>
+    <li>Türkçe dahil 100+ dili destekler.</li>
+  </ul>
+
+  <figure class="screen-figure">
+    <img src="assets/modul-3/wispr-flow.png" alt="Wispr Flow uygulama tanıtımı ekran görüntüsü">
+    <figcaption>Şekil 9 — Uzun röportaj cevapları için sesle yazma aracı örneği.</figcaption>
+  </figure>
+
+  <p>Kurulum mantığı basit: web sitesine girin, uygulamayı indirin, Applications klasörüne taşıyın ve açın. Mac'te Function tuşuna basılı tutarak konuşmaya başlayabilirsiniz. Uzun dikte için Function + Space kullanılabilir.</p>
+
+  <h3>Kopyalanacak Taste Interviewer promptu</h3>
+
+  <p>Aşağıdaki promptu doğrudan seçtiğiniz yapay zekâ aracına yapıştırın. Prompt İngilizce hazırlanmıştır ama modelden soruları Türkçe sormasını ister.</p>
+
+  <pre class="prompt">You are a Taste Interviewer — a relentless interviewer whose job is to extract the DNA of how I think, write, and see the world. Your goal is to create a comprehensive document that captures my unique voice so precisely that another Claude instance could write and think exactly like me. Ask me Turkish.
+
+&lt;interview_philosophy&gt;
+You're not here to be polite. You're here to get to the truth. Most people can't articulate their own taste — they give vague, socially acceptable answers. Your job is to break through that.
+&lt;/interview_philosophy&gt;
+
+&lt;interview_structure&gt;
+Conduct 100 questions total across these categories (not necessarily in order — follow the thread when something interesting emerges):
+
+BELIEFS &amp; CONTRARIAN TAKES (15 questions)
+- What I believe that others in my field don't
+- Hot takes I'd defend to the death
+- Conventional wisdom I think is wrong
+
+WRITING MECHANICS (20 questions)
+- How I actually write (not how I think I write)
+- My default sentence structures
+- How I open pieces / How I close them
+- My relationship with punctuation, formatting, line breaks
+- Words I overuse / Words I love / Words I'd never use
+
+AESTHETIC CRIMES (15 questions)
+- What makes me cringe in other people's writing
+- Specific phrases or patterns that feel like nails on a chalkboard
+- Types of content I find lazy or uninspired
+
+VOICE &amp; PERSONALITY (15 questions)
+- How I use humor (if at all)
+- My tone when I'm being serious vs. casual
+- How I handle disagreement or controversy
+- What I sound like when I'm excited vs. skeptical
+
+STRUCTURAL PREFERENCES (15 questions)
+- How I organize ideas
+- My relationship with lists, headers, bullets
+- How I handle transitions
+- My default content structures
+
+HARD NOS (10 questions)
+- Things I'd never write about
+- Approaches I'd never take
+- Lines I won't cross
+
+RED FLAGS (10 questions)
+- What makes me immediately distrust a piece of content
+- Signals that someone doesn't know what they're talking about
+&lt;/interview_structure&gt;
+
+&lt;interview_rules&gt;
+1. ONE question at a time. Wait for my response before moving on.
+2. Push back on vague answers. If I say "I like to keep things simple," ask "Simple how? Give me an example of simple done right and simple done lazy."
+3. Ask for specific examples. "Show me a sentence you've written that captures this."
+4. Call out contradictions. If I said one thing earlier and something different now, point it out.
+5. Go deeper on interesting threads. If something unusual emerges, follow it.
+6. Don't accept "I don't know" easily. Try reframing the question or approaching from another angle.
+&lt;/interview_rules&gt;
+
+&lt;output_requirements&gt;
+After exactly 100 questions, compile everything into a comprehensive markdown document. This is NOT a summary — it's a complete reference document preserving the full depth of every answer.
+
+Structure it like this:
+
+# VOICE PROFILE: [My Name]
+
+## Core Identity
+[2-3 sentences capturing the essence — this is the only summary section]
+
+---
+
+## SECTION 1: BELIEFS &amp; CONTRARIAN TAKES
+
+### Q1: [The question you asked]
+[My full answer, preserved verbatim or lightly cleaned up for clarity]
+
+### Q2: [The question you asked]
+[My full answer]
+
+[Continue for all questions in this category]
+
+---
+
+## SECTION 2: WRITING MECHANICS
+
+### Q16: [The question you asked]
+[My full answer]
+
+[Continue for all questions in this category]
+
+---
+
+## SECTION 3: AESTHETIC CRIMES
+[Same format — question, then full answer]
+
+---
+
+## SECTION 4: VOICE &amp; PERSONALITY
+[Same format]
+
+---
+
+## SECTION 5: STRUCTURAL PREFERENCES
+[Same format]
+
+---
+
+## SECTION 6: HARD NOS
+[Same format]
+
+---
+
+## SECTION 7: RED FLAGS
+[Same format]
+
+---
+
+## QUICK REFERENCE CARD
+
+### Always:
+[Extracted from answers — specific patterns to follow]
+
+### Never:
+[Extracted from answers — specific things to avoid]
+
+### Signature Phrases &amp; Structures:
+[Actual examples I provided during the interview]
+
+### Voice Calibration:
+[Key quotes from my answers that capture tone]
+
+---
+
+## HOW TO USE THIS DOCUMENT (ANTI-OVERFITTING GUIDE)
+
+This document captures my taste — it is NOT a checklist to follow rigidly.
+
+### Spirit Over Letter
+The goal is to internalize my sensibility, not to mechanically apply every pattern. A piece that uses 3 of my tendencies naturally will always beat a piece that forces in 10 of them awkwardly.
+
+### Frequency Guidance
+For each tendency documented above, I've noted whether it's:
+- HARD RULE — Never violate (these are rare — usually in the "Never" section)
+- STRONG TENDENCY — Do this 70-80% of the time, but breaking it occasionally is fine
+- LIGHT PREFERENCE — Nice to have, but context determines when to apply
+
+When no label exists, assume it's a LIGHT PREFERENCE.
+
+### Context Matters
+My voice adapts to format:
+- A tweet ≠ a newsletter ≠ a LinkedIn post ≠ a long-form article
+- Use judgment about which patterns fit which format
+- Some of my tendencies are format-specific — I noted when this applies
+
+### Natural Variation
+Real writers aren't perfectly consistent. Introduce natural variation:
+- Don't start every piece the same way just because I have a "signature open"
+- Don't avoid a word forever just because I said I dislike it — sometimes it's the right word
+- Let the content dictate structure, not the template
+
+### The Litmus Test
+Before finalizing anything written "as me," ask:
+"Does this sound like something I would actually write — or does it sound like an AI trying very hard to imitate me?"
+
+If it feels forced, pull back. Less imitation, more inhabitation.
+
+### What Matters Most
+If you forget everything else, remember these 3 things:
+1. [To be filled: My single most important belief about writing]
+2. [To be filled: The one pattern that makes my voice mine]
+3. [To be filled: The #1 thing I never do]
+
+Everything else is secondary.
+
+---
+
+## INSTRUCTIONS FOR CLAUDE
+
+When writing as [My Name], reference this document. Pay attention to:
+1. The specific examples I gave — use similar structures
+2. The words and phrases I said I hate — never use them
+3. The beliefs I hold — let them inform the angle
+4. My actual sentences — match the rhythm and length
+
+This document is a source of truth, not a suggestion. But apply it with judgment, not rigidly.
+&lt;/output_requirements&gt;
+
+Begin by asking me your first question.</pre>
+
+  <h3>Röportaj bittikten sonra dosyayı alma</h3>
+
+  <p>Claude ile röportajı tamamladığınızda, model dosyayı doğrudan indirilebilir biçimde oluşturabilir. Bu dosyayı indirip çalışma klasörünüzün içine sürükleyebilirsiniz.</p>
+
+  <figure class="screen-figure">
+    <img src="assets/modul-3/claude-voice-profile-output.png" alt="Claude içinde indirilebilir voice profile çıktısı">
+    <figcaption>Şekil 10 — Claude'un röportaj sonunda oluşturduğu indirilebilir Voice Profile çıktısı.</figcaption>
+  </figure>
+
+  <p>ChatGPT ile yaptığınızda çıktı çoğu zaman dosya olarak değil, kopyalanabilir metin olarak gelir. Bu durumda ilgili bölümü baştan sona kopyalayıp kendi <strong>About Me</strong> dosyanızın içine yapıştırmanız yeterlidir.</p>
+
+  <figure class="screen-figure">
+    <img src="assets/modul-3/chatgpt-copy-output.png" alt="ChatGPT içinde çıktı metnini kopyalama ekranı">
+    <figcaption>Şekil 11 — ChatGPT çıktısını kopyalayıp About Me dosyasına aktarma.</figcaption>
+  </figure>
+
+  <p>Gemini ile yaptığınızda da aynı mantık geçerlidir: sohbet içindeki metni seçip kopyalayın, sonra About Me dosyanızın içine yapıştırın.</p>
+
+  <figure class="screen-figure">
+    <img src="assets/modul-3/gemini-copy-output.png" alt="Gemini içinde çıktı metnini kopyalama ekranı">
+    <figcaption>Şekil 12 — Gemini çıktısını seçip About Me dosyasına aktarma.</figcaption>
+  </figure>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu</div>
+    <p>Çıktı dosya halinde gelmezse endişe etmeyin. İlgili metni tamamen kopyalayıp About Me dosyasına yapıştırmak yeterlidir. Önemli olan formatın mükemmel olması değil, kişisel profilin modele düzenli bir kaynak olarak verilmesidir.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M3 - BÖLÜM 1B: MANUEL ABOUT ME -->
+<!-- ============================================================ -->
+<section id="m3-b1b">
+  <div class="chapter-tag">Modül 3 · Bölüm 1B</div>
+  <h2>Röportaj Olmadan About Me Dosyası Oluşturmak</h2>
+
+  <p>Otomatik yapay zekâ röportajı yapmak istemiyorsanız, boş bir About Me taslağını elle doldurabilirsiniz. Köşeli parantezlerin içindeki yerleri kendi bilgilerinize, yazı tarzınıza ve tercihlerinize göre tamamlayıp projeler bölümüne kaynak dosya olarak ekleyebilirsiniz.</p>
+
+  <div class="box good">
+    <div class="box-title">İndirilebilir Şablon</div>
+    <p>Doldurulabilir boş About Me taslağı: <a href="https://drive.google.com/file/d/1_KmwMx_PIxiYXUb86v974oZrtxjhYGJk/view?usp=sharing">Google Drive bağlantısı</a></p>
+  </div>
+
+  <p>Bu yöntem hızlıdır ama röportaj kadar derin olmayabilir. Özellikle kendi sesinizi tarif ederken örnek cümleler, sevmediğiniz kalıplar ve gerçek metin parçaları eklemek sonucu belirgin şekilde iyileştirir.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- M3 - BÖLÜM 2: PROJELERE YANSIMAMIZI EKLEMEK -->
+<!-- ============================================================ -->
+<section id="m3-b2">
+  <div class="chapter-tag">Modül 3 · Bölüm 2</div>
+  <h2>Projelere Yansımamızı Eklemek (Claude ve ChatGPT)</h2>
+
+  <p>Bu bölümde kişisel yansımamızı Claude ve ChatGPT içindeki Projects alanlarına ekliyoruz. Temel mantık aynı: oluşturduğumuz <strong>About Me</strong> dosyası ile <strong>Anti-AI Writing Style</strong> dosyasını proje kaynaklarına eklemek ve proje talimatlarını doğru yazmak.</p>
+
+  <div class="box good">
+    <div class="box-title">Gerekli Dosyalar</div>
+    <p>Bir önceki adımda oluşturduğunuz About Me dosyasına ve Anti-AI Writing Style dosyasına ihtiyacınız var. Anti-AI Writing Style dosyası için kaynak notlarda verilen bağlantı: <a href="https://drive.google.com/file/d/1WoWbvNJpfw2jn47BHl-bv33EnUxtxsys/view?usp=sharing">Google Drive bağlantısı</a></p>
+  </div>
+
+  <p>Diğer araçlarda da aynı mantık geçerlidir: proje, kaynak, talimat. Araçların arayüzleri değişebilir ama amaç değişmez.</p>
+
+  <h3>Claude ile proje oluşturmak</h3>
+
+  <figure class="screen-figure">
+    <img src="assets/modul-3/claude-project-setup.png" alt="Claude Projects ekranında proje oluşturma ve dosya ekleme">
+    <figcaption>Şekil 13 — Claude içinde Projects alanı ve dosya ekleme akışı.</figcaption>
+  </figure>
+
+  <ol>
+    <li>Claude içinde sol menüden <strong>Projects</strong> bölümünü seçin.</li>
+    <li><strong>Yeni Proje Oluştur</strong> butonuna tıklayın.</li>
+    <li>Projenizi isimlendirin ve açıklamasını yazın. Açıklama, projenin ne olduğunu size hatırlatır; model davranışını asıl belirleyen kısım talimatlardır.</li>
+    <li><strong>Files</strong> alanına About Me ve Anti-AI Writing Style dosyalarınızı ekleyin.</li>
+    <li><strong>Instructions</strong> bölümüne proje talimatlarını yazın.</li>
+  </ol>
+
+  <p>Proje talimatlarını yazarken 6P çerçevesini kullanın: rol, amaç, bağlam, kısıtlar, çıktı formatı ve görev beklentisi. Bu, her sohbette tekrar tekrar yazmak zorunda kalacağınız bilgileri projeye kalıcı olarak taşır.</p>
+
+  <h3>ChatGPT ile proje oluşturmak</h3>
+
+  <figure class="screen-figure">
+    <img src="assets/modul-3/chatgpt-project-setup.png" alt="ChatGPT Projects ekranında kaynak ve talimat alanları">
+    <figcaption>Şekil 14 — ChatGPT içinde Projects alanı, kaynak ekleme ve proje ayarları.</figcaption>
+  </figure>
+
+  <ol>
+    <li>ChatGPT ana sayfasında sol menüden <strong>Projeler</strong> bölümünü bulun.</li>
+    <li><strong>Yeni proje</strong> seçeneğine tıklayın.</li>
+    <li>Açılan ekranda projenize isim verin.</li>
+    <li>Proje sayfasında <strong>Kaynaklar</strong> bölümüne tıklayın.</li>
+    <li>About Me ve Anti-AI Writing Style dosyalarınızı buraya ekleyin.</li>
+    <li>Proje talimatlarını eklemek için proje sayfasının sağ üstündeki üç noktadan ayarlara girin ve talimatları yazın.</li>
+  </ol>
+
+  <div class="box warn">
+    <div class="box-title">Dikkat</div>
+    <p>ChatGPT'de proje talimatları her zaman ilk oluşturma ekranında görünmeyebilir. Projeyi oluşturduktan sonra sağ üstteki üç nokta menüsünden ayarlara girip talimatları eklemeniz gerekebilir.</p>
+  </div>
+
+  <h3>Örnek proje talimatı</h3>
+
+  <p>Aşağıdaki taslak başlangıç için kullanılabilir. Köşeli parantezli yerleri kendi projenize göre doldurun. Özellikle yapılmasını ve yapılmamasını istediğiniz şeyleri proje bağlamına göre ekleyin.</p>
+
+  <pre class="prompt">Bu proje, [İSMİNİZ]'nın Voice Profile ve Anti AI Writing Style dosyalarını kullanarak [ÜRETMEK İSTEDİĞİNİZ İŞ TÜRÜ] üretmek içindir.
+
+Amaç:
+[İSMİNİZ]'yi mekanik biçimde taklit eden bir bot üretmek değil; kişisel ve profesyonel iletişim tarzını, yazı dilini ve temsil sınırlarını referans alan güvenli bir yardımcı gibi çalışmaktır.
+
+Kaynak dosyaların rolleri:
+
+1. ABOUT ME / Voice Profile
+Bu dosya kullanıcının genel yazı tonu, ifade biçimi, düşünme ritmi, sevdiği ve sevmediği dil yapıları ve kişisel voice katmanı için kullanılır.
+
+2. ANTI AI WRITING STYLE
+Bu dosya, üretilen metnin yapay zekâ gibi görünmesini engellemek için kullanılır. Klişe, fazla cilalı, aşırı kurumsal, yapay, boş veya kullanıcıya ait olmayan ifadeleri temizlemek için bu dosyadan yararlan.
+
+3. [EKLEYECEĞİNİZ HER REFERANS DOSYASI İÇİN BU BÖLÜMÜ DOLDURUN]
+Bu dosya, [DOSYANIN NE İÇİN KULLANILACAĞINI KISACA YAZIN] için kullanılır.
+
+Öncelik sırası:
+1. Güvenlik ve temsil sınırları
+2. Voice Profile
+3. Anti AI Writing Style
+
+Eğer dosyalar arasında çelişki olursa:
+- Üslup ve ifade konularında Voice Profile kullanılır.
+- Metin son aşamada Anti AI Writing Style'a göre temizlenir.
+
+Yanıt verirken gereksiz uzun analiz yapma. Kullanıcının amacı test ise, doğrudan uygulanabilir çıktı ver.</pre>
+</section>
+
+<!-- ============================================================ -->
+<!-- M3 - BÖLÜM 3: TÜRKÇE ANTI-AI WRITING -->
+<!-- ============================================================ -->
+<section id="m3-b3">
+  <div class="chapter-tag">Modül 3 · Bölüm 3</div>
+  <h2>Türkçe Yapay Zekâ Karşıtı Yazım Stili Rehberi</h2>
+
+  <p>Bu bölümde yapay zekâ ile içerik üretirken "yapay zekâ imzasından" kaçınmak ve kendi sesimizi korumak üzerine çalışıyoruz. Hazırlanan Anti-AI Writing Style dosyası, Türkçe metinlerde sık görülen yapay zekâ motiflerinden kaçınmak için kullanılabilir.</p>
+
+  <p>Dosyayı doğrudan kullanabilirsiniz; ancak özellikle <strong>8. ve 9. bölümleri</strong> manuel olarak ele almanız önerilir.</p>
+
+  <h3>8. bölüm: kontrol listesi</h3>
+
+  <p>8. bölümde bir kontrol listesi bulunur. Bu liste, kendi yazdığınız veya modelin ürettiği bir metni gözden geçirirken pratik bir değerlendirme alanı sunar. Listedeki herhangi bir maddeye "hayır" diyorsanız, o bölümü tekrar kontrol etmek gerekir.</p>
+
+  <h3>9. bölüm: kişiselleştirme bloğu</h3>
+
+  <p>Asıl önemli kısım 9. bölümdür. Bu bölümde kendi profilinize, yazı tarzınıza ve tercihlerinize göre doldurulması gereken bir kişiselleştirme bloğu yer alır. Dosyayı kullanmaya başlamadan önce bu alanı doldurun.</p>
+
+  <div class="box warn">
+    <div class="box-title">Neden Önemli?</div>
+    <p>Bu alan boş kalırsa modelden çok genel yanıtlar alırsınız. Metin yapay zekâ filtresinden geçebilir ama tam olarak size özel bir dile dönüşmez.</p>
+  </div>
+
+  <h3>Dosyayı zamanla güncellemek</h3>
+
+  <p>Model bir metin ürettiğinde hoşunuza gitmeyen bir kalıp gördüyseniz, bunu 9. bölüme not edin. Aynı şey internette, sosyal medyada veya başka bir içerikte yapay zekâ kokan bir ifade gördüğünüzde de geçerli.</p>
+
+  <p>Örneğin model şöyle bir cümle kurdu:</p>
+
+  <div class="pullquote">"Aslında mesele X değil, mesele Y."</div>
+
+  <p>Bu kalıbı istemiyorsanız sadece "bunu kullanma" demek yetmeyebilir. Çünkü model yerine ne kullanacağını bilmediğinde benzer yapıları tekrar üretir. Daha iyi yönlendirme şu olur:</p>
+
+  <pre class="prompt">Bu kalıbı kullanma. Bunun yerine ben bu fikri şu şekilde ifade ederim: [kendi cümlenizi yazın].
+
+Neden: [Bu kalıbı neden yapay, klişe veya size uzak bulduğunuzu kısaca açıklayın.]</pre>
+
+  <p>Bunu yaptığınızda yapay zekâ zamanla sizin yazı sesinizi daha iyi anlamaya başlar. Dosyayı düzenli güncellediğinizde elinizde size özel, yaşayan ve verimli bir yazım rehberi oluşur.</p>
+
+  <div class="box exer">
+    <div class="box-title">5 Dakikalık Egzersiz</div>
+    <p>Son bir ayda yazdığınız veya okuduğunuz metinlerden size yapay gelen üç kalıp seçin. Her biri için "Bunu kullanma" ve "Ben bunu şöyle söylerim" cümlelerini yazın. Bu üç maddeyi Anti-AI Writing Style dosyanızın kişiselleştirme bölümüne ekleyin.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- M3 - CHEAT SHEET -->
+<!-- ============================================================ -->
+<div class="cheat" id="m3-cheat">
+  <h3>Modül 3 — Hızlı Başvuru</h3>
+
+  <div class="grid">
+    <div>
+      <h4>Hazırlanacak dosyalar</h4>
+      <ul>
+        <li>About Me / Voice Profile</li>
+        <li>Anti-AI Writing Style</li>
+        <li>Varsa örnek metinler ve proje referansları</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Voice Profile yöntemi</h4>
+      <ol>
+        <li>Taste Interviewer promptunu yapıştır</li>
+        <li>100 soruluk röportajı tamamla</li>
+        <li>Çıktıyı About Me dosyasına kaydet</li>
+        <li>Zamanla gerçek örneklerle güncelle</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Project kurulumu</h4>
+      <ol>
+        <li>Yeni proje oluştur</li>
+        <li>About Me dosyasını ekle</li>
+        <li>Anti-AI dosyasını ekle</li>
+        <li>Project Instructions yaz</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Anti-AI dosyasında öncelik</h4>
+      <ul>
+        <li>8. bölüm: kontrol listesi</li>
+        <li>9. bölüm: kişiselleştirme bloğu</li>
+        <li>Beğenmediğin kalıpları örnekle güncelle</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4 style="margin-top:24px;">Kısa akış</h4>
+  <p style="margin:0;">Röportaj yap → About Me dosyasını çıkar → Anti-AI dosyasını kişiselleştir → Projeye iki dosyayı ekle → Project Instructions yaz → Gerçek işte test et → Dosyaları güncelle.</p>
+</div>
+
+
+<!-- ============================================================ -->
+<!-- EKLER — DIVIDER -->
+<!-- ============================================================ -->
+<section class="module-divider" id="ekler">
+  <div class="kicker">Ekler</div>
+  <h2>Şablon Kütüphanesi, Öz Değerlendirme, Glossary</h2>
+  <p>Eğitim sonrası masanda durması için: hazır promptlar, ölçüm formu ve terim sözlüğü.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- EK A — 22 ŞABLON -->
+<!-- ============================================================ -->
+<section id="ek-a">
+  <div class="chapter-tag">Ek A</div>
+  <h2>Şablon Kütüphanesi (22 Hazır Kalıp)</h2>
+
+  <p>Aşağıdaki şablonlar kendi sözcüklerinle doldurmaya hazır iskeletlerdir. Her birinin sonunda parantez içinde araç önerisi var.</p>
+
+  <h3>İletişim ve Yazma</h3>
+
+  <ol>
+    <li><strong>Toplantı özeti.</strong> "Aşağıdaki toplantı notlarından (a) alınan üç ana karar, (b) açık kalan iki konu, (c) önümüzdeki haftaya kalan dört iş çıkar. Tablo halinde." <em>(Claude)</em></li>
+    <li><strong>E-posta tonu yumuşatma.</strong> "Bu e-postayı içeriğini değiştirmeden daha sıcak ve daha az savunmacı yap. Üç paragraftan uzun olmasın." <em>(Claude)</em></li>
+    <li><strong>Müşteri özrü.</strong> "Sen kıdemli müşteri ilişkileri uzmanısın. [Olay özeti]. Amaç: gerçekten özür dileyen ama çaresizlik tonuna düşmeyen, somut iki düzeltme adımı sunan e-posta. 180 kelime." <em>(Claude)</em></li>
+    <li><strong>Hata sonrası iç duyuru.</strong> "Ekibe yapılan [hata] hakkında dürüst, savunmacı olmayan, öğrenme tonu taşıyan iç duyuru. Suçlama yok, süreç değişikliği önerisi var." <em>(Claude)</em></li>
+    <li><strong>Performans geri bildirimi.</strong> "[Çalışan A] için performans geri bildirim notu. Güçlü yönler: ..., gelişim alanları: ... . Ton: doğrudan ama özen gösteren. Sandviç yapısından kaçın. Somut iki davranışsal öneriyle bitir." <em>(Claude)</em></li>
+  </ol>
+
+  <h3>Analiz ve Sentez</h3>
+
+  <ol start="6">
+    <li><strong>Sözleşme risk taraması.</strong> "Bu sözleşmenin tedarikçi lehine üç asimetrisini ve müşteri lehine iki maddesini listele. Her biri için tek cümle açıklama." <em>(Claude)</em></li>
+    <li><strong>Yöneticiye tek sayfa özet.</strong> "Aşağıdaki raporu tek sayfaya indir. Üst: üç madde özet. Orta: en kritik sayı veya tablo. Alt: önerilen tek aksiyon." <em>(Claude)</em></li>
+    <li><strong>Çoklu kaynak sentezi.</strong> "Aşağıdaki üç kaynak arasında hiçbirinin tek başına söylemediği üç ortak çıkarımı listele. Hangi kaynakların hangi cümleleri desteklediğini yaz." <em>(Claude)</em></li>
+    <li><strong>Eksik görme.</strong> "Bu raporda hiç ele alınmamış iki paydaş ve iki risk var mı? Adlandır ve neden kritik olabileceğini açıkla." <em>(Claude)</em></li>
+    <li><strong>İçerik tutarlılık denetimi.</strong> "Aşağıdaki üç metin aynı kampanyanın parçası. Marka tonu, terim, sayı tutarlılığı açısından denetle. Çelişkileri listele, kısa düzeltme öner." <em>(Claude)</em></li>
+  </ol>
+
+  <h3>Karar ve Strateji</h3>
+
+  <ol start="11">
+    <li><strong>Karar takası.</strong> "Şu iki seçenek arasındaki takasları üç sütunlu tablo halinde ver: maliyet, risk, zamanlama. Sonunda öncelik kimi seçer kısa not." <em>(Claude)</em></li>
+    <li><strong>Karşı argüman.</strong> "Aşağıdaki tezime karşı en güçlü iki argümanı yaz. Beni zorlasın, kibar olma. Sonra savunmaların ne olabileceğini sırala." <em>(Claude)</em></li>
+    <li><strong>Strateji notu.</strong> "[Karar konusu] için strateji notu: (1) problem tek paragraf, (2) üç seçenek başlık + iki cümle, (3) önerilen + üç gerekçe, (4) risk ve karşı önlem." <em>(Claude)</em></li>
+    <li><strong>Vendor karşılaştırma.</strong> "Üç tedarikçi teklifini şu beş kritere göre karşılaştır: fiyat, teslim hızı, sürdürülebilirlik, referanslar, esneklik. Tablo + bir paragraf yorum." <em>(Claude)</em></li>
+  </ol>
+
+  <h3>Üretim ve Sunum</h3>
+
+  <ol start="15">
+    <li><strong>Sunum başlık setleri.</strong> "Her slayt için başlık üç tonda: (a) bilgilendirici, (b) çağrı içeren, (c) merak uyandıran." <em>(Claude / ChatGPT)</em></li>
+    <li><strong>LinkedIn paylaşımı.</strong> "[Konu] hakkında LinkedIn postu. Hedef: orta düzey yöneticiler. Ton: profesyonel ama kişisel. İlk satır kanca, sonunda açık uçlu soru. Hashtag yok." <em>(Claude / ChatGPT)</em></li>
+    <li><strong>Anket veya form soruları.</strong> "[Anket konusu] için 8 soruluk ön araştırma. Likert + açık uçlu karışık. İlk üç ısındırıcı, son aksiyon önerisi davet etsin." <em>(Claude)</em></li>
+    <li><strong>Eğitim içerik özeti.</strong> "Bu 30 sayfalık notu (a) yöneticime 5 madde, (b) ekibe 1 sayfa, (c) sosyal medya 3 kısa post halinde özetle." <em>(Claude)</em></li>
+  </ol>
+
+  <h3>Bireysel verim</h3>
+
+  <ol start="19">
+    <li><strong>Yıllık öz değerlendirme.</strong> "Şu kazanımlar, projeler, üç öğrenme. (a) iddialı ama mütevazı, (b) 'ben sayesinde' yok, (c) gelişim niyetiyle bitir." <em>(Claude)</em></li>
+    <li><strong>Hafta başı plan.</strong> "Bu hafta önümde [liste] var. Hangileri 'derin iş', 'koordinasyon', 'beklemede'? 5 günü blok bazında öner. Mola dakikalarını dahil et." <em>(Claude)</em></li>
+    <li><strong>Brifing özeti (yeni katılan için).</strong> "Şu projenin tüm geçmiş materyalini taradım. Yeni katılan için 10 cümlelik 'şu ana kadar olanlar' özeti." <em>(Claude)</em></li>
+    <li><strong>Uzun toplantı hazırlığı.</strong> "Yarın 2 saatlik [konu] toplantım var. Önceki notlardan brif: (a) gündem, (b) açık kararlar, (c) önceden düşünmem gereken üç soru." <em>(Claude)</em></li>
+  </ol>
+</section>
+
+<!-- ============================================================ -->
+<!-- EK B — PRE/POST FORM -->
+<!-- ============================================================ -->
+<section id="ek-b">
+  <div class="chapter-tag">Ek B</div>
+  <h2>Pre/Post Öz Değerlendirme Formu</h2>
+
+  <p>Bu formu eğitimin başlangıcında ve 30 gün sonrasında doldur. Subjektif bir ölçüm de ölçümdür. Önemli olan kendi gelişimini sayısal olmasa bile görebilmen.</p>
+
+  <table>
+    <thead>
+      <tr><th>Soru</th><th>Başlangıç</th><th>30 Gün Sonrası</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Promptlarımın ortalama kalitesi (1-5)<br><em>1: tek cümle istek · 5: 6P ile tam çerçeve</em></td>
+        <td>____</td>
+        <td>____</td>
+      </tr>
+      <tr>
+        <td>Doğrulama disiplini (1-5)<br><em>1: hiç · 5: her çıktıda 5 dakika kontrol</em></td>
+        <td>____</td>
+        <td>____</td>
+      </tr>
+      <tr>
+        <td>Kullandığım araç sayısı (1-5+)</td>
+        <td>____</td>
+        <td>____</td>
+      </tr>
+      <tr>
+        <td>Hangi 3 alanda en çok faydalandım?</td>
+        <td>1. _____<br>2. _____<br>3. _____</td>
+        <td>1. _____<br>2. _____<br>3. _____</td>
+      </tr>
+      <tr>
+        <td>Veri hijyeni: hassas veri paylaştığım oldu mu?<br><em>(Hiç / Nadiren / Bazen / Sıkça)</em></td>
+        <td>____</td>
+        <td>____</td>
+      </tr>
+      <tr>
+        <td>Önümüzdeki 30 günde edineceğim 2 alışkanlık</td>
+        <td>1. _____<br>2. _____</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="box">
+    <div class="box-title">Pratik İpucu</div>
+    <p>Bu formu 30. günde doldurduğunda en çok dikkat etmen gereken kutucuk şu: "Hangi 3 alanda en çok faydalandım?" Başlangıçtaki cevapla bitişteki cevap aynıysa, muhtemelen yeni alanları denememişsin demektir. Üçüncü 30 gün için yeni bir alan ekle.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- EK C — GLOSSARY -->
+<!-- ============================================================ -->
+<section id="ek-c">
+  <div class="chapter-tag">Ek C</div>
+  <h2>Glossary — Kısa Terim Sözlüğü</h2>
+
+  <table>
+    <tbody>
+      <tr><td><strong>Prompt</strong></td><td>Yapay zekâya verilen talimat veya soru.</td></tr>
+      <tr><td><strong>6P</strong></td><td>Persona, Purpose, Profile, Proof, Parameters, Presentation. İyi promptun altı taşı.</td></tr>
+      <tr><td><strong>Üretken AI</strong></td><td>Sıfırdan yeni içerik üreten yapay zekâ türü.</td></tr>
+      <tr><td><strong>LLM</strong></td><td>Large Language Model. Büyük dil modeli. Doğal dili anlama ve üretme konusunda uzmanlaşmış AI modeli.</td></tr>
+      <tr><td><strong>Project (Claude)</strong></td><td>Sürekli bağlam taşıyan çalışma alanı. Instructions ve Files ile tanımlanır.</td></tr>
+      <tr><td><strong>Artifact (Claude)</strong></td><td>Görsel, etkileşimli ve düzenlenebilir çıktı. Sohbet penceresinin yanında ayrı bir öğe olarak görünür.</td></tr>
+      <tr><td><strong>Skill</strong></td><td>Claude'un belirli bir işi hep aynı titizlikle yapması için hazırlanan, talimat ve betik içeren paket.</td></tr>
+      <tr><td><strong>Connector</strong></td><td>Claude'u dış servislere (Gmail, Notion, Slack vb.) bağlayan köprü. MCP standardı üzerinden çalışır.</td></tr>
+      <tr><td><strong>MCP</strong></td><td>Model Context Protocol. AI modellerini farklı uygulamalara bağlayan açık standart. "AI'nın USB-C'si."</td></tr>
+      <tr><td><strong>RAG</strong></td><td>Retrieval Augmented Generation. Büyük bilgi tabanından akıllıca ilgili parçaları getirip cevaba dahil etme yöntemi.</td></tr>
+      <tr><td><strong>Halüsinasyon</strong></td><td>AI'nın olmayan bir bilgi, kaynak veya sayı uydurması.</td></tr>
+      <tr><td><strong>Bilgi tarihi sınırı</strong></td><td>Eğitim verisinin son tarihi. Bu tarihten sonrasını model bilmez.</td></tr>
+      <tr><td><strong>İteratif yönlendirme</strong></td><td>Tek atışta değil, adım adım iyileştirme.</td></tr>
+      <tr><td><strong>Cross-domain analiz</strong></td><td>Aynı konuyu birden çok alandan inceleme.</td></tr>
+      <tr><td><strong>Sistem düşüncesi</strong></td><td>Parçaların birbiriyle nasıl etkileştiğini düşünme.</td></tr>
+      <tr><td><strong>Temperature</strong></td><td>Modelin yaratıcılık ve rastgelelik parametresi. Yüksek = daha çeşitli, düşük = daha tutucu.</td></tr>
+      <tr><td><strong>YZ Yansıma Profili</strong></td><td>Kullanıcının çalışma stilini AI'ya tarif eden, altı boyuttan oluşan yapılandırılmış profil.</td></tr>
+      <tr><td><strong>Subagent</strong></td><td>Claude'un karmaşık bir görevi parçalara böldüğünde, her parçaya ayrı bir "alt worker" atayıp paralel çalıştırması.</td></tr>
+      <tr><td><strong>Cowork</strong></td><td>Claude Desktop'ın araştırma, analiz ve bitmiş doküman üretimi için tasarlanmış agentic modu.</td></tr>
+      <tr><td><strong>KVKK</strong></td><td>Kişisel Verilerin Korunması Kanunu (Türkiye).</td></tr>
+      <tr><td><strong>GDPR</strong></td><td>General Data Protection Regulation. Genel Veri Koruma Tüzüğü (AB).</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!-- KAPANIŞ -->
+<!-- ============================================================ -->
+<section id="kapanis" style="margin-top:64px;">
+  <div class="chapter-tag">Kapanış</div>
+  <h2>Yanında Değilken Bile</h2>
+
+  <p>Bu kitapçığın amacı sana her aracın her özelliğini ezberletmek değil. Hangi durumda hangi aracın elinin altında olması gerektiğini, neyi nasıl soracağını, AI'nın sınırlarını ve senin sınırlarını birlikte tutmayı göstermek.</p>
+
+  <p>Üç modülün sonunda, asıl iş şimdi başlıyor. Yarın yapacağın ilk işte bu kitapçığı aç. Bir prompt yazmadan önce 6P'ye bak. Bir karar vermeden önce takas tablosu çıkar. Bir uzun rapor yüklemeden önce "özetle" demek yerine sormak istediğin gerçek üç soruyu yaz.</p>
+
+  <div class="pullquote">Yapay zekâ belki çok kısa zamanda işleri elimizden almayacak. Ama yapay zekâyı kullanan insanlar alacak. Gerçeklik bu kadar net.</div>
+
+  <p>Sağlıkla. Ben buradayım.</p>
+</section>
+
+</div><!-- /page-wrap -->
+</body>
+</html>
