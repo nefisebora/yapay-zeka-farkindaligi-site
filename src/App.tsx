@@ -19,6 +19,7 @@ interface RouteTarget {
 }
 
 const moduleIdSet = new Set<ModuleId>(courseModules.map((module) => module.id));
+const linkedInUrl = 'https://www.linkedin.com/in/nefisebora/';
 
 function parseHash(hashValue: string): RouteTarget {
   const fallbackModule = getModuleById(defaultModuleId)!;
@@ -333,12 +334,27 @@ export default function App() {
           onClose={() => setSideNavOpen(false)}
           onNavigate={navigateToSection}
         />
-        <article
-          key={activeModule}
-          className="lesson-content"
-          onClick={handleContentClick}
-          dangerouslySetInnerHTML={{ __html: moduleHtml[activeModule] }}
-        />
+        <div className="content-column">
+          <article
+            key={activeModule}
+            className="lesson-content"
+            onClick={handleContentClick}
+            dangerouslySetInnerHTML={{ __html: moduleHtml[activeModule] }}
+          />
+          <section id="iletisim" className="author-contact" aria-labelledby="iletisim-baslik">
+            <div>
+              <p className="author-kicker">İletişim</p>
+              <h2 id="iletisim-baslik">Nefise Bora tarafından hazırlandı</h2>
+              <p>
+                Eğitim, yapay zekâ farkındalığı ve kişisel YZ asistanı çalışmalarıyla ilgili
+                bağlantıda kalmak için LinkedIn üzerinden ulaşabilirsiniz.
+              </p>
+            </div>
+            <a className="author-link" href={linkedInUrl} target="_blank" rel="noreferrer">
+              LinkedIn profiline git
+            </a>
+          </section>
+        </div>
       </main>
     </div>
   );

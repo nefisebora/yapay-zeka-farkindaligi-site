@@ -97,7 +97,8 @@ export const courseModules: CourseModule[] = [
       { id: 'ek-a', label: 'Şablon Kütüphanesi' },
       { id: 'ek-b', label: 'Pre/Post Değerlendirme' },
       { id: 'ek-c', label: 'Glossary' },
-      { id: 'kapanis', label: 'Kapanış' }
+      { id: 'kapanis', label: 'Kapanış' },
+      { id: 'iletisim', label: 'İletişim' }
     ]
   }
 ];
